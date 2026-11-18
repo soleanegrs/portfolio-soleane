@@ -1,0 +1,13 @@
+# Fichiers qui restent sur l'ordinateur et ne partent pas en ligne
+# - la version tout-en-un (55 Mo), pour ouvrir le site sans internet
+portfolio-soleane.html
+# - les maquettes de test
+maquette*.html
+# - les anciennes sections mises de cote
+archive/
+# - les notes perso
+LISEZ-MOI.txt
+# - fichiers systeme
+Thumbs.db
+desktop.ini
+.DS_Store
