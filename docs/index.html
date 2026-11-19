@@ -1650,7 +1650,11 @@ window.__openFiche = () => this.setState({ open: 'about', menu: false });
     const L = Array.prototype.slice.call(svg.querySelectorAll('.dom'));
     if (L.length < 9) { svg.classList.add('alive'); return; }
     const O = 7, I = 8, out = this.domAnims, ms = 1000;
+    // bords figés (Safari) : on mesure les lettres sans leur image figée, qui déborde un peu
+    const PFI = Array.prototype.slice.call(svg.querySelectorAll('[data-pf-img]'));
+    PFI.forEach((im) => { im.style.display = 'none'; });
     const B = L.map((el) => { try { return el.getBBox(); } catch (e) { return null; } });
+    PFI.forEach((im) => { im.style.display = ''; });
     if (B.some((b) => !b || !b.width)) { svg.classList.add('alive'); return; }
     const anim = (el, frames, dur) => {
       let prev = 0; frames.forEach((f) => { if (f.offset !== undefined) { f.offset = Math.min(1, Math.max(prev, f.offset)); prev = f.offset; } });
@@ -2702,5 +2706,6 @@ mach.addEventListener('click', (e) => { if (!e.target.closest('#lever')) give();
   }
   setInterval(function () { var h = document.getElementById('curio-walker'); if (h && !h.shadowRoot) mountW(h); }, 300);
 })();
-</script></body>
+</script>
+<script src="fige-bords.js"></script></body>
 </html>

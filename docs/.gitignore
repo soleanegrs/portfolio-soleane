@@ -11,3 +11,5 @@ LISEZ-MOI.txt
 Thumbs.db
 desktop.ini
 .DS_Store
+# - les pages de test
+test-*.html

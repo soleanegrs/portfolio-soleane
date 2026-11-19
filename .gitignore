@@ -1,3 +1,5 @@
 # Restent sur l'ordinateur, ne partent pas en ligne
 .claude/
 *.zip
+sauvegardes/
+CONTEXTE-SITE.md
