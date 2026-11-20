@@ -86,10 +86,11 @@ window.__openFiche = () => this.setState({ open: 'about', menu: false });
         if (im) {
           e.stopPropagation();
           // dans une pellicule, on garde toute la bande pour pouvoir passer d'une photo à l'autre
-          const grp = im.classList.contains('fimg') ? Array.prototype.slice.call(document.querySelectorAll('img.fimg')) : (im.classList.contains('mimg') ? Array.prototype.slice.call(document.querySelectorAll('img.mimg')) : [im]);
+          // photos regroupées (data-grp) : on passe de l'une à l'autre avec les flèches, sans sortir de la catégorie
+          const grp = im.dataset.grp ? Array.prototype.slice.call(document.querySelectorAll('img.gph[data-grp="' + im.dataset.grp + '"]')) : im.classList.contains('fimg') ? Array.prototype.slice.call(document.querySelectorAll('img.fimg')) : (im.classList.contains('mimg') ? Array.prototype.slice.call(document.querySelectorAll('img.mimg')) : [im]);
           this.lbList = grp.map((g) => ({ src: g.currentSrc || g.src, alt: g.alt || '' }));
           this.lbIdx = Math.max(0, grp.indexOf(im));
-          this.setState({ lb: im.currentSrc || im.src, lbAlt: im.alt || '' });
+          this.setState({ lb: im.currentSrc || im.src, lbAlt: im.alt || '', lbMany: this.lbList.length > 1 });
         }
       }, true);
       document.addEventListener('keydown', (e) => {
@@ -266,6 +267,12 @@ window.__openFiche = () => this.setState({ open: 'about', menu: false });
     window.location.href = url;
   }
   toCarnet() { this.goPage('curiosites.html'); }
+  lbStep(d) {
+    const L = this.lbList || [];
+    if (L.length < 2) return;
+    this.lbIdx = ((this.lbIdx || 0) + d + L.length) % L.length;
+    this.setState({ lb: L[this.lbIdx].src, lbAlt: L[this.lbIdx].alt });
+  }
   /* ---------- Se souvenir de la page (retour depuis Instagram) ---------- */
   secTops() { return [0, this.bd ? this.bd.offsetTop : 1, this.cn ? this.cn.offsetTop : 2, this.ab ? this.ab.offsetTop : 3]; }
   saveSpot() {
@@ -560,7 +567,11 @@ window.__openFiche = () => this.setState({ open: 'about', menu: false });
    makeT: 'processus', make: 'à l’atelier : découpe laser, essai de matière, assemblage', makePh: '[photo d’atelier]',
    sketchT: 'le sol comme outil de composition',
    sketch: 'De légères variations de hauteur du sol distinguent la cuisine, le salon et l’espace de repos, sans aucune cloison. Chaque zone gagne sa propre identité et sa propre échelle, tout en restant reliée aux autres.\n\nDans un volume aussi réduit, ces changements de niveau structurent l’intérieur de façon légère et ouverte : le sol devient un élément architectural à part entière, qui guide les déplacements et crée des ambiances différentes au sein d’un même espace.' },
- diesel: { title: 'RE:MAKE', tag: 'marque · scénographie', color: '#FF5B4D',
+ diesel: { title: 'RE:MAKE', tag: 'espace · aménagement', color: '#FF5B4D',
+   year: '2026', kind: 'projet d’école', dur: 'solo', team: '',
+   pitch: 'Création d’un concept-store Diesel avec un espace boutique et un espace personnalisé : démesure et upcycling',
+   ctx: 'Diesel, marque de denim née en Italie en 1978, s’est construite sur la provocation et l’anticonformisme.\n\nDans un monde où la mode devient plus lisse et plus digitale, j’ai choisi d’y faire entrer la démesure et l’upcycling.',
+   sketch: 'recherches de différentes pistes',
    intent: 'Mon intention était de rendre le passage par l’espace d’upcycling incontournable afin d’inciter les clients à participer activement à l’expérience. En les invitant à détourner, transformer et réinventer leurs vêtements, Diesel leur permet de s’approprier pleinement la démarche, tout en faisant de l’upcycling un véritable acte d’expression, de provocation et d’anticonformisme.',
    makeT: 'plans', make: '[Tes plans : l’implantation du magasin, les circulations, les différents espaces.]', makePh: '[plans]' }
 };
@@ -853,7 +864,12 @@ window.__openFiche = () => this.setState({ open: 'about', menu: false });
       isVlb: !!s.vlb, vlbSrc: s.vlb || '', vlbAlt: s.vlbAlt || '',
       closeVlb: () => this.setState({ vlb: null }),
       bgCloseVlb: (e) => { if (e && e.target === e.currentTarget) this.setState({ vlb: null }); },
-      isLb: !!s.lb, lbSrc: s.lb || '', lbAlt: s.lbAlt || '',
+      // fiche projet ouverte (fond opaque) : on met en sommeil la page dessous
+      rootCls: P[s.open] ? 'ovl' : '',
+      isLb: !!s.lb, lbSrc: s.lb || '', lbAlt: s.lbAlt || '', lbMany: !!s.lbMany,
+      // flèches de l'agrandissement : photo précédente / suivante du même groupe
+      lbPrev: this._lbPrev || (this._lbPrev = (e) => { if (e) e.stopPropagation(); this.lbStep(-1); }),
+      lbNext: this._lbNext || (this._lbNext = (e) => { if (e) e.stopPropagation(); this.lbStep(1); }),
       closeLb: () => this.setState({ lb: null }),
       bgCloseLb: (e) => { if (e && e.target === e.currentTarget) this.setState({ lb: null }); },
       bookInlCls: s.bookInl ? ' inl' : '', bookInl: !!s.bookFun, bookNotInl: !s.bookFun,
