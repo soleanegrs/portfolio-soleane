@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>À propos · Portfolio Soléane</title>
+<style>html,body{margin:0;height:100%;overflow:hidden;background:#F5F0E7}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Gochi+Hand&family=Permanent+Marker&family=Lilita+One&family=Freckle+Face&family=Lacquer&family=Rubik+Dirt&family=Sedgwick+Ave+Display&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/site.css">
+</head>
+<body data-page="apropos">
+<div id="app"></div>
+<!-- partie propre à cette page (insérée dans le gabarit commun partials/commun.html) -->
+<template id="tpl-page">
+<section ref="{{abRef}}" class="about2" aria-label="&Agrave; propos de moi"><div id="bonbon-host"></div></section>
+</template>
+<script src="bords-data.js"></script>
+<script src="bords.js"></script>
+<script src="runtime.js"></script>
+<script src="js/app.js"></script>
+<script src="js/pages.js"></script>
+<script src="js/avatar.js"></script>
+<template id="bonbon-tpl"><style>
+:host{--cream:#F5F0E7;--paper:#FBF8F1;--ink:#1C1B1A;--red:#FF5B4D;--pink:#F47EB3;--fuch:#F21BC9;--blue:#3472F6;--yel:#FFB92F;--lem:#FFE45C;--green:#36A96B}
+*{box-sizing:border-box}
+:host{display:block}
+.page{font-family:'Gochi Hand',cursive;color:var(--ink);user-select:none}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+.lil{font-family:'Lilita One',cursive;text-transform:uppercase;letter-spacing:1px}
+p{margin:0}
+.page{position:relative;width:1360px;height:880px;margin:0 auto}
+/* bulle titre */
+.bubble{position:absolute;left:20px;top:14px;width:320px;height:221px;z-index:5}
+.bubble svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;filter:drop-shadow(3px 6px 4px rgba(0,0,0,.22))}
+.bubble h2{position:absolute;left:0;right:0;top:50%;margin:0;transform:translateY(-50%) rotate(-5deg);text-align:center;font-family:'Freckle Face',cursive;font-weight:400;font-size:46px;line-height:.95;color:var(--lem)}
+.how{position:absolute;left:890px;top:40px;width:420px;font-size:30px;text-align:center;line-height:1.3;color:#5b554d;transform:rotate(-1deg)}
+.how b{font-weight:400;color:var(--fuch)}
+/* la machine */
+.machine{position:absolute;left:890px;top:100px;width:420px;height:690px;overflow:visible}
+.lever,.knobhit{cursor:grab;touch-action:none}
+.lever:active{cursor:grabbing}
+.machine .shake{animation:mshake .5s ease-in-out}
+@keyframes mshake{20%{transform:translateX(-4px) rotate(-.6deg)}50%{transform:translateX(4px) rotate(.6deg)}80%{transform:translateX(-2px)}}
+.pulse{animation:pulse 1.6s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+@keyframes pulse{50%{transform:scale(1.12)}}
+/* boule qui tombe dans le bac */
+.ball{position:absolute;width:58px;height:58px;z-index:20;cursor:pointer;opacity:0}
+.ball .h{position:absolute;left:0;width:58px;height:29px;transition:transform .55s cubic-bezier(.3,1.6,.5,1),opacity .3s .35s}
+.ball .h1{top:0;border-radius:29px 29px 0 0;background:radial-gradient(circle at 32% 75%,rgba(255,255,255,.8),rgba(255,255,255,0) 38%),var(--c)}
+.ball .h2{top:29px;border-radius:0 0 29px 29px;background:linear-gradient(var(--c),color-mix(in srgb,var(--c) 65%,#000));box-shadow:inset 0 2px 0 rgba(0,0,0,.15)}
+.ball.open .h1{transform:translate(-40px,-46px) rotate(-60deg);opacity:0}
+.ball.open .h2{transform:translate(40px,26px) rotate(45deg);opacity:0}
+.ball:not(.open){animation:bob 1.2s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-6px) rotate(8deg)}}
+.ball .tap{position:absolute;left:50%;top:-36px;transform:translateX(-50%);white-space:nowrap;font-size:20px;color:var(--fuch)}
+.ball.open .tap{display:none}
+.pop{position:absolute;left:50%;top:50%;width:150px;height:150px;margin:-75px 0 0 -75px;opacity:0;pointer-events:none}
+.ball.open .pop{animation:popup 1.2s cubic-bezier(.3,1.6,.5,1) .15s forwards}
+@keyframes popup{0%{opacity:0;transform:scale(.2)}35%{opacity:1;transform:translateY(-120px) scale(1.15) rotate(-6deg)}70%{opacity:1;transform:translateY(-120px) scale(1)}100%{opacity:0;transform:translate(-460px,-240px) scale(.4)}}
+.pop svg{width:100%;height:100%;overflow:visible;filter:url(#PO)}
+/* le tableau ou les etiquettes s'accumulent */
+.board{position:absolute;left:30px;top:250px;width:820px;height:640px}
+.slot{position:absolute;width:250px;height:190px;border:3px dashed rgba(28,27,26,.22);border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'Freckle Face',cursive;font-size:56px;color:rgba(28,27,26,.15);transform:rotate(var(--r))}
+.note{position:absolute;width:262px;min-height:196px;padding:24px 22px 22px 22px;background:var(--paper);box-shadow:3px 10px 16px rgba(0,0,0,.2);filter:url(#T);transform:rotate(var(--r));opacity:0;z-index:6}
+.note.in{animation:notein .7s cubic-bezier(.3,1.5,.5,1) forwards}
+@keyframes notein{0%{opacity:0;transform:translate(420px,160px) rotate(40deg) scale(.3)}100%{opacity:1;transform:rotate(var(--r))}}
+.note:hover{z-index:9;transform:rotate(0) scale(1.06);transition:transform .25s cubic-bezier(.3,1.6,.5,1)}
+.note .tape{position:absolute;left:36%;top:-12px;width:30%;height:22px;background:var(--c);opacity:.6;transform:rotate(-4deg)}
+.note .ic{position:absolute;right:-16px;top:-26px;width:64px;height:64px}
+.note .ic svg{width:100%;height:100%;overflow:visible;filter:url(#PO)}
+.note .lil{font-size:22px;color:var(--c);margin:0 34px 8px 0;line-height:1.05}
+.note p{font-size:20px;line-height:1.28}
+/* collier de bonbons */
+.neck{display:none}
+.guide{position:absolute;left:700px;top:476px;width:200px;height:300px;z-index:8}
+.gav{position:absolute;right:0;bottom:0;width:150px;height:283px;filter:drop-shadow(3px 8px 6px rgba(0,0,0,.25));transform-origin:50% 100%}
+.gav svg{width:100%;height:100%;overflow:visible}
+.gav.hop{animation:ghop .6s cubic-bezier(.3,1.6,.5,1)}
+.gav .fb{transform-box:view-box;transform-origin:160px 480px;animation:gsway 3.2s ease-in-out infinite}
+@keyframes gsway{0%,100%{transform:rotate(-2deg)}50%{transform:rotate(2deg) translateY(-3px)}}
+.gav .hd{transform-box:view-box;transform-origin:160px 230px;animation:gnod 2.4s ease-in-out infinite}
+@keyframes gnod{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(4deg)}}
+.gav .ar{transform-box:view-box;transform-origin:232px 270px;transform:rotate(126deg)}
+.gav .armR{animation:gwave .9s ease-in-out 3}
+@keyframes gwave{0%,100%{transform:rotate(126deg)}50%{transform:rotate(-10deg)}}
+.gav .armL{animation:gswing 3.2s ease-in-out infinite}
+@keyframes gswing{0%,100%{transform:rotate(122deg)}50%{transform:rotate(132deg)}}
+.gav.dance .fb{animation:gdance .5s ease-in-out infinite}
+@keyframes gdance{0%,100%{transform:translateY(0) rotate(-6deg)}50%{transform:translateY(-16px) rotate(6deg)}}
+.gav.dance .armL,.gav.dance .armR{animation:gup .5s ease-in-out infinite}
+@keyframes gup{0%,100%{transform:rotate(-14deg)}50%{transform:rotate(8deg)}}
+@keyframes ghop{30%{transform:translateY(-22px) rotate(-8deg) scale(1.06)}60%{transform:translateY(0) rotate(5deg)}}
+.gbub{position:absolute;left:125px;bottom:308px;translate:-50% 0;padding:24px 34px 26px;background-color:#F7A8C7;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .45 -.08'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");border-radius:44px;font-size:23px;line-height:1.15;color:#9C2F62;white-space:nowrap;box-shadow:inset 0 -3px 0 rgba(214,110,156,.35),2px 7px 12px rgba(0,0,0,.2);transform:rotate(-3deg)}
+.gbub::before{content:'';position:absolute;inset:8px;border:2.5px dashed rgba(255,244,249,.95);border-radius:36px;pointer-events:none}
+.gbub::after{content:'';position:absolute;left:34%;bottom:-20px;width:30px;height:26px;background:inherit;clip-path:path('M0 0 L30 0 Q14 8 6 26 Q2 12 0 0 Z')}
+.gbub.bp{animation:bpop .45s cubic-bezier(.3,1.8,.5,1)}
+@keyframes bpop{from{transform:scale(.4) rotate(-12deg)}}
+.skip{position:absolute;left:30px;top:742px;padding:14px 28px 16px;background:#F5F0E7;border-radius:16px;font-size:25px;color:#1C1B1A;box-shadow:3px 6px 0 rgba(28,27,26,.18),0 2px 10px rgba(0,0,0,.12);transition:transform .2s cubic-bezier(.3,1.6,.5,1)}
+.skip::before{content:'';position:absolute;inset:5px;border:2px dashed #3472F6;border-radius:12px;pointer-events:none}
+.skip:hover{transform:rotate(-2deg) scale(1.06);color:var(--fuch)}
+.skip.gone{opacity:0;pointer-events:none;transition:opacity .4s}
+.gav,.photo{cursor:pointer}
+.photo{transition:transform .25s cubic-bezier(.3,1.6,.5,1)}
+.photo:hover{transform:rotate(-1deg) scale(1.06)}
+.chutebox{position:absolute;left:25px;top:-150px;width:200px;height:322px;opacity:0;pointer-events:none;transform-origin:50% 100%}
+.guide.land{animation:gland 2.4s cubic-bezier(.25,.6,.35,1) both}
+@keyframes gland{0%{transform:translateY(-820px) rotate(-5deg)}40%{transform:translateY(-380px) rotate(5deg)}75%{transform:translateY(-40px) rotate(-3deg)}100%{transform:none}}
+.guide.land .chutebox{animation:cland 2.4s linear both}
+@keyframes cland{0%,82%{opacity:1;transform:none}100%{opacity:0;transform:scaleY(.15)}}
+.guide.land .gbub{opacity:0;animation:none}
+.guide.land .ar{transform:rotate(-10deg);animation:none}
+.neck svg{width:100%;height:100%;overflow:visible}
+.neck .lbl{position:absolute;right:0;top:118px;font-size:22px;color:#5b554d;display:none}
+.bead{transition:transform .5s cubic-bezier(.3,1.8,.5,1);transform-box:fill-box;transform-origin:center}
+.string.boing{animation:boing .7s ease-out}
+@keyframes boing{25%{transform:translateY(10px)}55%{transform:translateY(-6px)}80%{transform:translateY(3px)}}
+/* ticket d'or */
+.gold{position:absolute;left:150px;top:290px;width:600px;z-index:40;opacity:0;pointer-events:none;transform:translateY(80px) rotate(-10deg) scale(.5)}
+.gold.show{animation:goldin 1s cubic-bezier(.3,1.5,.5,1) forwards;pointer-events:auto}
+@keyframes goldin{to{opacity:1;transform:translateY(0) rotate(-3deg) scale(1)}}
+.tk{position:relative;padding:34px 44px 36px;background:linear-gradient(115deg,#E2A41C,#FFE9A0 30%,#F2C23E 55%,#FFF0B8 75%,#D9971A);border:4px dashed #A9700F;border-radius:12px;box-shadow:6px 20px 30px rgba(0,0,0,.32);filter:url(#T);text-align:center;overflow:hidden}
+.tk::after{content:'';position:absolute;top:0;left:-40%;width:30%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.7),transparent);transform:skewX(-20deg);animation:glint 2.6s ease-in-out infinite}
+@keyframes glint{0%,40%{left:-40%}80%,100%{left:130%}}
+.tk h3{margin:0;font-family:'Freckle Face',cursive;font-weight:400;font-size:62px;color:#6E4200;line-height:1}
+.tk .sub{font-size:24px;color:#6E4200;margin:8px 0 22px}
+.tk .acts{position:relative;z-index:2;display:flex;gap:20px;justify-content:center}
+.tk a{display:inline-block;padding:13px 28px 15px;background:var(--ink);color:var(--lem);font-family:'Lilita One',cursive;font-size:24px;text-transform:uppercase;text-decoration:none;border-radius:30px;transition:transform .2s cubic-bezier(.3,1.6,.5,1)}
+.tk a:hover{transform:scale(1.08) rotate(-3deg)}
+.tk .x{position:absolute;right:16px;top:8px;z-index:3;font-size:28px;color:#6E4200}
+.toast{position:absolute;left:190px;top:620px;width:520px;padding:14px 20px;background:var(--ink);color:var(--cream);font-size:22px;border-radius:12px;opacity:0;transition:opacity .3s;z-index:41}
+.toast.on{opacity:1}
+.conf{position:absolute;width:22px;height:22px;pointer-events:none;z-index:45;animation:conf 1.4s ease-out forwards}
+@keyframes conf{to{transform:translate(var(--x),var(--y)) rotate(400deg) scale(.4);opacity:0}}
+.idc{position:absolute;left:360px;top:20px;width:300px;height:190px;padding:0;background:#FBF8F1;border-radius:14px;box-shadow:3px 10px 16px rgba(0,0,0,.22);transform:rotate(-4deg);cursor:pointer;text-align:left;z-index:4;animation:idwig 4s ease-in-out infinite;transition:transform .25s cubic-bezier(.3,1.6,.5,1)}
+.idc::before{content:'';position:absolute;inset:6px;border:2.5px dashed #3472F6;border-radius:10px;pointer-events:none}
+.idc:hover{animation:none;transform:rotate(0) scale(1.06)}
+@keyframes idwig{0%,84%,100%{transform:rotate(-4deg)}89%{transform:rotate(-8deg) scale(1.04)}94%{transform:rotate(0) scale(1.04)}}
+.idhd{position:absolute;left:0;right:0;top:0;height:38px;border-radius:14px 14px 0 0;background:#F47EB3;color:#fff;font-family:'Lilita One',cursive;font-size:17px;letter-spacing:2px;line-height:40px;text-align:center}
+.idph{position:absolute;left:20px;top:52px;width:84px;height:106px;background:#E7DFD0;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:16px;color:rgba(28,27,26,.5)}
+.idtx{position:absolute;left:118px;top:54px;right:14px;display:flex;flex-direction:column;gap:5px;font-size:17px;color:#5b554d;line-height:1.1}
+.idtx b{font-family:'Freckle Face',cursive;font-weight:400;font-size:26px;color:#1C1B1A}
+.idtx i{font-style:normal}
+.idtx .cv{margin-top:4px;color:#F21BC9}
+.idgo{position:absolute;right:-22px;bottom:-18px;padding:7px 16px 9px;background:#FFE45C;border-radius:30px;font-size:21px;color:#1C1B1A;white-space:nowrap;box-shadow:2px 4px 0 #1C1B1A;animation:idgo 1.1s ease-in-out infinite}
+@keyframes idgo{0%,100%{transform:rotate(6deg)}50%{transform:rotate(6deg) scale(1.12)}}
+.photo .ph{height:124px;background:#E7DFD0;display:flex;align-items:center;justify-content:center;font-size:20px;color:rgba(28,27,26,.5)}
+.photo .cap{position:absolute;left:0;right:0;bottom:6px;text-align:center;font-size:20px}
+.photo .tp{position:absolute;left:34%;top:-11px;width:32%;height:20px;background:rgba(244,126,179,.6);transform:rotate(-5deg)}
+</style><svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<filter id="T" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="3" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="6" xChannelSelector="R" yChannelSelector="G"/></filter>
+<filter id="P" x="-20%" y="-20%" width="140%" height="140%">
+<feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="3" seed="7" result="noise"></feTurbulence>
+<feMorphology in="SourceAlpha" operator="dilate" radius="4" result="fat"></feMorphology>
+<feDisplacementMap in="fat" in2="noise" scale="16" xChannelSelector="R" yChannelSelector="G" result="fatTorn"></feDisplacementMap>
+<feFlood flood-color="#F5F0E7" result="white"></feFlood>
+<feComposite in="white" in2="fatTorn" operator="in" result="whiteEdge"></feComposite>
+<feDisplacementMap in="SourceGraphic" in2="noise" scale="8" xChannelSelector="R" yChannelSelector="G" result="colorTorn"></feDisplacementMap>
+<feGaussianBlur in="fatTorn" stdDeviation="4" result="blur"></feGaussianBlur>
+<feOffset in="blur" dx="3" dy="6" result="off"></feOffset>
+<feComponentTransfer in="off" result="shadow"><feFuncA type="linear" slope="0.3"></feFuncA></feComponentTransfer>
+<feMerge><feMergeNode in="shadow"></feMergeNode><feMergeNode in="whiteEdge"></feMergeNode><feMergeNode in="colorTorn"></feMergeNode></feMerge>
+</filter><filter id="P2" x="-20%" y="-20%" width="140%" height="140%">
+<feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="3" seed="23" result="noise"></feTurbulence>
+<feMorphology in="SourceAlpha" operator="dilate" radius="4" result="fat"></feMorphology>
+<feDisplacementMap in="fat" in2="noise" scale="14" xChannelSelector="R" yChannelSelector="G" result="fatTorn"></feDisplacementMap>
+<feFlood flood-color="#F5F0E7" result="white"></feFlood>
+<feComposite in="white" in2="fatTorn" operator="in" result="whiteEdge"></feComposite>
+<feDisplacementMap in="SourceGraphic" in2="noise" scale="6" xChannelSelector="R" yChannelSelector="G" result="colorTorn"></feDisplacementMap>
+<feGaussianBlur in="fatTorn" stdDeviation="4" result="blur"></feGaussianBlur>
+<feOffset in="blur" dx="3" dy="6" result="off"></feOffset>
+<feComponentTransfer in="off" result="shadow"><feFuncA type="linear" slope="0.3"></feFuncA></feComponentTransfer>
+<feMerge><feMergeNode in="shadow"></feMergeNode><feMergeNode in="whiteEdge"></feMergeNode><feMergeNode in="colorTorn"></feMergeNode></feMerge>
+</filter><filter id="PO" x="-15%" y="-15%" width="130%" height="130%" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="3" seed="9" result="n"/><feMorphology in="SourceAlpha" operator="dilate" radius="8" result="fat"/><feDisplacementMap in="fat" in2="n" scale="18" xChannelSelector="R" yChannelSelector="G" result="torn"/><feFlood flood-color="#FBF8F1"/><feComposite in2="torn" operator="in" result="paper"/><feGaussianBlur in="torn" stdDeviation="5" result="b"/><feOffset in="b" dx="4" dy="9" result="o"/><feComponentTransfer in="o" result="sh"><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode in="sh"/><feMergeNode in="paper"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+<linearGradient id="red" x1="0" x2="1"><stop offset="0" stop-color="#A3190F"/><stop offset=".22" stop-color="#FF5B4D"/><stop offset=".4" stop-color="#FF9A8F"/><stop offset=".58" stop-color="#EC3F31"/><stop offset="1" stop-color="#8A140C"/></linearGradient>
+<linearGradient id="redv" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FF9A8F"/><stop offset=".45" stop-color="#EC3F31"/><stop offset="1" stop-color="#A3190F"/></linearGradient>
+<linearGradient id="pink" x1="0" x2="1"><stop offset="0" stop-color="#D9518F"/><stop offset=".28" stop-color="#FFC0DB"/><stop offset=".55" stop-color="#F47EB3"/><stop offset="1" stop-color="#C9437F"/></linearGradient>
+<linearGradient id="cream" x1="0" x2="1"><stop offset="0" stop-color="#E9D8C8"/><stop offset=".35" stop-color="#FFF6EC"/><stop offset="1" stop-color="#E2CDBA"/></linearGradient>
+<linearGradient id="chrome" x1="0" x2="1"><stop offset="0" stop-color="#7E858D"/><stop offset=".3" stop-color="#F4F6F8"/><stop offset=".55" stop-color="#B4BAC1"/><stop offset=".8" stop-color="#EEF0F2"/><stop offset="1" stop-color="#737A82"/></linearGradient>
+<radialGradient id="glass" cx=".33" cy=".28" r=".8"><stop offset="0" stop-color="#fff" stop-opacity=".5"/><stop offset=".55" stop-color="#DDEFF8" stop-opacity=".08"/><stop offset=".92" stop-color="#9FC4D6" stop-opacity=".22"/><stop offset="1" stop-color="#7FA9BE" stop-opacity=".5"/></radialGradient>
+<radialGradient id="shade" cx=".35" cy=".3" r=".8"><stop offset=".45" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".55"/></radialGradient>
+<radialGradient id="hole" cx=".5" cy=".3" r=".8"><stop offset="0" stop-color="#3A0A06"/><stop offset="1" stop-color="#120302"/></radialGradient>
+<symbol id="bub" viewBox="0 0 405 280"><polygon points="6,3 142,59 178,5 237,58 309,3 304,72 392,42 322,125 399,152 325,192 358,264 218,219 170,270 144,222 27,274 82,205 8,200 86,147 5,82 75,83" fill="#F47EB3" stroke="#3472F6" stroke-width="10"/></symbol>
+</defs></svg><div class="page" id="page">
+<div class="bubble"><svg><use href="#bub"/></svg><h2>à propos</h2></div>
+
+<button class="idc" id="idc" aria-label="Ouvrir ma fiche personnelle : mes infos, mon CV et mon contact"><span class="idhd">FICHE PERSONNELLE</span><span class="idph">[photo]</span><span class="idtx"><b>Sol&#233;ane Gros</b><i>design d&#8217;espace &amp; sc&#233;no</i><i class="cv">infos &#183; CV &#183; contact</i></span><span class="idgo">clique-moi ! &#9758;</span></button>
+
+<svg class="machine" id="mach" viewBox="0 0 420 690">
+<g id="body">
+<!-- ombre au sol -->
+<ellipse cx="210" cy="676" rx="200" ry="14" fill="#000" opacity=".16"/>
+<g filter="url(#PO)">
+<!-- dome en verre -->
+<circle cx="210" cy="270" r="168" fill="#EAF4F8" fill-opacity=".28"/>
+<!-- socle rose du musee -->
+<path d="M84 446 L336 446 L370 650 L50 650 Z" fill="url(#pink)"/>
+<rect x="74" y="438" width="272" height="22" rx="8" fill="url(#cream)"/>
+<rect x="34" y="644" width="352" height="28" rx="12" fill="url(#cream)"/>
+</g>
+<!-- boules -->
+<g clip-path="url(#cg)"><g id="balls"></g></g>
+<clipPath id="cg"><circle cx="210" cy="270" r="162"/></clipPath>
+<circle cx="210" cy="270" r="168" fill="url(#glass)" stroke="#fff" stroke-opacity=".7" stroke-width="3"/>
+<path d="M78 220 Q92 150 168 126" stroke="#fff" stroke-width="15" stroke-linecap="round" fill="none" opacity=".8"/>
+<path d="M352 300 Q344 360 300 400" stroke="#fff" stroke-width="6" stroke-linecap="round" fill="none" opacity=".45"/>
+<!-- support qui tient la boule, avec mon nom -->
+<g filter="url(#PO)"><path d="M68 370 Q210 404 352 370 L338 446 L82 446 Z" fill="url(#red)"/></g>
+<path d="M74 374 Q210 408 346 374" fill="none" stroke="#FFB3AA" stroke-width="4" stroke-linecap="round" opacity=".85"/>
+<text x="210" y="428" text-anchor="middle" font-family="Gochi Hand" font-size="21" fill="#FFFFFF">dans la t&#234;te de sol</text>
+<!-- chapeau, pose sur la boule -->
+<g filter="url(#PO)">
+<rect x="196" y="44" width="28" height="26" rx="10" fill="url(#chrome)"/>
+<path d="M102 142 Q102 70 210 64 Q318 70 318 142 Z" fill="url(#red)"/>
+<rect x="88" y="132" width="244" height="28" rx="13" fill="url(#redv)"/>
+</g>
+<path d="M128 116 Q146 86 194 78" stroke="#fff" stroke-width="7" stroke-linecap="round" fill="none" opacity=".45"/>
+<!-- panneau d'instructions -->
+<path d="M104 474 L196 474 L196 624 L92 624 Z" fill="#EC3F31"/>
+<g font-family="Lilita One" fill="#FFF6EC" font-size="12" text-anchor="middle" letter-spacing=".3"><text x="145" y="512">1 · TIRE</text><text x="145" y="546">2 · OUVRE</text><text x="145" y="580">3 · COLLECTIONNE</text></g>
+<g fill="#FFF6EC" opacity=".9"><circle cx="122" cy="608" r="5"/><circle cx="146" cy="608" r="5"/><circle cx="170" cy="608" r="5"/></g>
+<!-- distributeur + bac -->
+<rect x="214" y="474" width="110" height="64" rx="10" fill="#EC3F31"/>
+<path d="M240 492 Q269 478 298 492 L298 516 Q269 528 240 516 Z" fill="#FFF6EC" opacity=".9"/>
+<rect x="214" y="550" width="110" height="74" rx="10" fill="url(#hole)"/>
+<path d="M214 604 L324 604 L330 624 L208 624 Z" fill="#EC3F31"/>
+<!-- manette a tirer -->
+<rect x="356" y="500" width="16" height="110" rx="8" fill="url(#chrome)"/>
+<rect x="344" y="590" width="42" height="18" rx="7" fill="url(#cream)"/>
+<g class="lever" id="lever"><rect x="355" y="468" width="18" height="70" rx="9" fill="#5A5F66"/><circle cx="364" cy="456" r="24" fill="url(#redv)" stroke="#8A140C" stroke-width="3"/><circle cx="356" cy="448" r="7" fill="#fff" opacity=".7"/><circle cx="364" cy="456" r="34" fill="none" stroke="#F21BC9" stroke-width="3" stroke-dasharray="6 6" class="pulse"/></g>
+</g>
+</svg>
+
+<!-- collier de bonbons -->
+<div class="neck"><svg viewBox="0 0 720 150" preserveAspectRatio="none"><g class="string" id="string"><g id="beads"></g></g></svg><p class="lbl" id="lbl">ma collection : 0 / 5</p></div>
+
+<div class="board" id="board"></div><div class="guide" id="guide" aria-live="polite"><span class="chutebox" id="gchute"></span><p class="gbub" id="gbub">psst… tire la manette !</p><div class="gav" id="gav"></div></div><button class="skip" id="skip">pas le temps de jouer ? tout voir →</button>
+
+<div class="gold" id="gold"><div class="tk"><button class="x" aria-label="Fermer">✕</button><h3>ticket d’or !</h3><p class="sub">bravo, ta collection est compl&egrave;te !</p><div class="acts"><a href="cv/CV-Soleane-Gros.pdf" id="cv" target="_blank" rel="noopener">mon CV ↓</a><a href="#" id="mail">m’écrire ✉</a></div></div></div>
+<p class="toast" id="toast"></p>
+</div></template>
+<script src="js/bonbonniere.js"></script>
+</body>
+</html>

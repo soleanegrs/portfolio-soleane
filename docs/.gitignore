@@ -13,3 +13,5 @@ desktop.ini
 .DS_Store
 # - les pages de test
 test-*.html
+# - la version hors-ligne (3 pages, a ouvrir par double-clic)
+hors-ligne/
