@@ -26,7 +26,6 @@ const PAGE = document.body.dataset.page || 'accueil';
 class Component extends DCLogic {
   componentDidMount() {
     window.__openLetter = () => this.setState({ open: 'letter', menu: false, letter: null });
-window.__openFiche = () => this.setState({ open: 'about', menu: false });
     // toute photo de projet s'agrandit au clic ; Échap la referme
     if (!window.__lbInit) {
       window.__lbInit = true;
@@ -261,7 +260,7 @@ window.__openFiche = () => this.setState({ open: 'about', menu: false });
   /* ---------- Page 4 : le carnet des curiosités ---------- */
   /* ---------- Navigation entre les 3 pages ---------- */
   goPage(url) {
-    this.setState({ menu: false, aboutSub: false, open: null, book: false, bookOpen: false, cab: null, lb: null, vlb: null });
+    this.setState({ menu: false, open: null, book: false, bookOpen: false, cab: null, lb: null, vlb: null });
     if (location.pathname.split('/').pop() === url) return;
     this.saveSpot();
     window.location.href = url;
@@ -732,7 +731,7 @@ window.__openFiche = () => this.setState({ open: 'about', menu: false });
       hdrCls: hiddenAv ? 'hdr off' : 'hdr on', showCorner: !hiddenAv,
       avCls: 'av2 ' + pos + (hiddenAv ? ' hidden' : '') + (walking ? ' walking' : '') + (pos === 'board' && s.away ? ' away' : ''),
       avL: pos === 'board' ? ((s.bx ?? 112) + 'px') : '', avDur: walking ? '0s' : '',
-      avClick: () => { if (phase === 'cover') this.coverToFall(); else this.setState({ open: 'about', menu: false }); },
+      avClick: () => { if (phase === 'cover') this.coverToFall(); else if (PAGE !== 'apropos') this.goPage('a-propos.html'); },
       nbClick: () => { if (this.justDragged) return; this.preloadBook(); this.setState({ book: true, bookInl: false, bookFun: false, bookOpen: false, page: 0, turn: null }); this.later(() => this.setState({ bookOpen: true }), 80); },
       heRef: this._refs.he,
       scribCls: hiddenAv ? 'scrib' : 'scrib on',
@@ -740,6 +739,7 @@ window.__openFiche = () => this.setState({ open: 'about', menu: false });
       goCarnet: () => { if (s.allSeen) this.toCarnet(); },
       abRef: this._refs.ab,
       goAboutPage: () => this.goPage('a-propos.html'),
+      goUp: () => this.goPage(PAGE === 'apropos' ? 'curiosites.html' : 'index.html#projets'),
       curioBtnCls: (s.allSeen ? ' cshow' : ' chide') + (s.nudge ? ' nudge' : ''),
       // flèche ↑ de la page projets : retour à la couverture
       goTop: () => { if ((phase === 'board' || phase === 'dizzy') && Date.now() >= (this.lockUntil || 0)) { this.lockUntil = Date.now() + 1700; this.startClimb(); } },
@@ -757,9 +757,7 @@ window.__openFiche = () => this.setState({ open: 'about', menu: false });
       goDown: () => toProjects(),
       menuOpen: !!s.menu, menuExp: s.menu ? 'true' : 'false',
       toggleMenu: () => this.setState({ menu: !s.menu }),
-      toggleAboutSub: () => this.setState({ aboutSub: !s.aboutSub }), aboutSub: !!s.aboutSub, aboutSubExp: s.aboutSub ? 'true' : 'false', aboutSubArrow: s.aboutSub ? '▴' : '▾',
-      goFiche: () => this.setState({ menu: false, aboutSub: false, book: false, bookOpen: false, cab: null, lb: null, open: 'about' }),
-      goCurio: () => { this.setState({ menu: false, aboutSub: false, open: null, book: false, bookOpen: false, cab: null, lb: null, allSeen: true }); setTimeout(() => this.toCarnet(), 60); },
+      goCurio: () => { this.setState({ menu: false, open: null, book: false, bookOpen: false, cab: null, lb: null, allSeen: true }); setTimeout(() => this.toCarnet(), 60); },
       goStart: refold, goAbout: () => this.goPage('a-propos.html'), goProjects: toProjects,
       goLabo: () => { this.setState({ menu: false, open: null, book: false, bookOpen: false, cab: null, lb: null, book: true, bookInl: false, bookFun: false, page: 0, turn: null }); this.later(() => this.setState({ bookOpen: true }), 80); },
       goContact: () => this.setState({ menu: false, open: null, book: false, bookOpen: false, cab: null, lb: null, open: 'letter', letter: null }),
@@ -796,7 +794,7 @@ window.__openFiche = () => this.setState({ open: 'about', menu: false });
       isMag: (this.props.projectLayout ?? 'Fiche magazine') !== 'Process en bande',
       isProc: (this.props.projectLayout ?? 'Fiche magazine') === 'Process en bande',
       openSki: go('ski'), openKart: go('kart'), openCanard: go('canard'), openPeniche: go('peniche'), openDiesel: go('diesel'),
-      openAbout: go('about'), close: go(null),
+      close: go(null),
       // clic sur le fond (à côté du papier) = fermer
       bgClose: (e) => { if (e && e.target === e.currentTarget) this.setState({ open: null, menu: false }); },
       ...(() => {
@@ -887,7 +885,7 @@ window.__openFiche = () => this.setState({ open: 'about', menu: false });
       myEmail: MY_EMAIL,
       outlookHref: 'https://outlook.live.com/mail/0/deeplink/compose?to=' + encodeURIComponent(MY_EMAIL) + '&subject=' + encodeURIComponent('Bonjour Soléane !'),
       mailHref: 'mailto:' + MY_EMAIL + '?subject=' + encodeURIComponent('Bonjour Soléane !'),
-      isProject: !!P[s.open], isAbout: s.open === 'about', isContact: s.open === 'contact', isPhoto: !!{ a: { label: '[photo de toi]', cap: '[légende : moi en vrai]' }, b: { label: '[photo d’atelier]', cap: '[légende : à l’atelier]' }, e: { label: '[photo de maquette]', cap: '[légende : ma maquette préférée]' }, f: { label: '[photo souvenir]', cap: '[légende : un souvenir]' } }[s.open],
+      isProject: !!P[s.open], isContact: s.open === 'contact', isPhoto: !!{ a: { label: '[photo de toi]', cap: '[légende : moi en vrai]' }, b: { label: '[photo d’atelier]', cap: '[légende : à l’atelier]' }, e: { label: '[photo de maquette]', cap: '[légende : ma maquette préférée]' }, f: { label: '[photo souvenir]', cap: '[légende : un souvenir]' } }[s.open],
       phLabel: ({ a: { label: '[photo de toi]', cap: '[légende : moi en vrai]' }, b: { label: '[photo d’atelier]', cap: '[légende : à l’atelier]' }, e: { label: '[photo de maquette]', cap: '[légende : ma maquette préférée]' }, f: { label: '[photo souvenir]', cap: '[légende : un souvenir]' } }[s.open] || { a: { label: '[photo de toi]', cap: '[légende : moi en vrai]' }, b: { label: '[photo d’atelier]', cap: '[légende : à l’atelier]' }, e: { label: '[photo de maquette]', cap: '[légende : ma maquette préférée]' }, f: { label: '[photo souvenir]', cap: '[légende : un souvenir]' } }.a).label, phCap: ({ a: { label: '[photo de toi]', cap: '[légende : moi en vrai]' }, b: { label: '[photo d’atelier]', cap: '[légende : à l’atelier]' }, e: { label: '[photo de maquette]', cap: '[légende : ma maquette préférée]' }, f: { label: '[photo souvenir]', cap: '[légende : un souvenir]' } }[s.open] || { a: { label: '[photo de toi]', cap: '[légende : moi en vrai]' }, b: { label: '[photo d’atelier]', cap: '[légende : à l’atelier]' }, e: { label: '[photo de maquette]', cap: '[légende : ma maquette préférée]' }, f: { label: '[photo souvenir]', cap: '[légende : un souvenir]' } }.a).cap,
       phOpen: { a: () => { if (!this.justDragged) this.setState({ open: 'a' }); }, b: () => { if (!this.justDragged) this.setState({ open: 'b' }); }, e: () => { if (!this.justDragged) this.setState({ open: 'e' }); }, f: () => { if (!this.justDragged) this.setState({ open: 'f' }); } },
       goHello: () => { if (phase === 'cover') this.coverToFall(); },

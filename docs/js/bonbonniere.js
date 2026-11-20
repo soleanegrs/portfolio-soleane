@@ -12,14 +12,14 @@ const OBJ = {
   palette: '<svg viewBox="0 0 120 120"><path d="M60 12 C28 12 10 36 12 62 C14 92 38 108 58 104 C70 102 66 90 74 86 C84 82 100 92 106 74 C114 46 92 12 60 12 Z" fill="#F2D6A8"/><circle cx="40" cy="40" r="10" fill="#FF5B4D"/><circle cx="66" cy="32" r="10" fill="#FFB92F"/><circle cx="88" cy="50" r="10" fill="#36A96B"/><circle cx="34" cy="70" r="10" fill="#3472F6"/><circle cx="56" cy="84" r="9" fill="#F47EB3"/></svg>'
 };
 const INFO = [
-  { t: 'qui suis-je', x: '[ton prénom, ton école, ton année, ta phrase d’accroche]', ic: () => avatar('wink') },
-  { t: 'ce que je cherche', x: '[stage, durée, dates, type d’agence ou de studio]', ic: () => avatar('think') },
-  { t: 'ma vision', x: '[deux ou trois phrases sur ta façon de voir l’espace]', ic: () => avatar('star') },
-  { t: 'ce qui me nourrit', x: '[matière, couleur, image, musique…]', ic: () => avatar('love') },
-  { t: 'ce qui me tient à cœur', x: '[un sujet qui compte pour toi, en deux lignes]', ic: () => avatar('happy') }
+  { t: 'qui suis-je', x: 'Je suis un peu comme un citron caviar : <b><i>« Pétillante, surprenante et pleine de pépins créatifs ! »</i></b>. J’aime expérimenter et sortir des sentiers battus. On me découvre petit à petit, au fil de mes idées et de mes <b>multiples facettes</b>.', ic: () => avatar('wink') },
+  { t: 'ce que je cherche', x: 'Je recherche un <b>stage en design d’espace, scénographie</b> ou <b>design immersif</b>, au sein d’une agence ou d’un studio qui laisse place à la créativité, à l’expérimentation et aux idées audacieuses.', ic: () => avatar('think') },
+  { t: 'ma vision', x: 'Créer des univers qui ne se regardent pas seulement, mais qui se ressentent. Jouer avec les <b>contrastes</b>, la <b>couleur</b> et <b>l’étrangeté</b> pour surprendre, intriguer et éveiller <b>l’imagination</b>.', ic: () => avatar('star') },
+  { t: 'ce qui me nourrit', x: '• les couleurs, les matières et les textures<br>• les contrastes et les associations inattendues<br>• les univers étranges, immersifs et imaginaires<br>• la curiosité, la recherche et la découverte<br>• tout ce qui sort de l’ordinaire et <b>bouscule les perceptions</b>', ic: () => avatar('love') },
+  { t: 'ce qui me tient à cœur', x: 'Créer des espaces qui racontent des histoires sans imposer leur interprétation. Laisser place à la curiosité, à <b>l’émotion</b> et à l’imagination de chacun, tout en gardant cette <b>spontanéité créative propre à l’enfance</b>.', ic: () => avatar('happy') }
 ];
 // emplacements des etiquettes sur le tableau
-const SLOTS = [{ x: 20, y: 0, r: -4 }, { x: 290, y: 20, r: 3 }, { x: 560, y: -24, r: -2 }, { x: 60, y: 250, r: 2.5 }, { x: 340, y: 262, r: -3.5 }];
+const SLOTS = [{ x: 10, y: -20, r: -3 }, { x: 285, y: 0, r: 2.5 }, { x: 560, y: -34, r: -2 }, { x: 60, y: 262, r: 2 }, { x: 340, y: 276, r: -3 }];
 const board = root.getElementById('board');
 SLOTS.forEach((s, i) => { const d = document.createElement('div'); d.className = 'slot'; d.style.left = s.x + 'px'; d.style.top = s.y + 'px'; d.style.setProperty('--r', s.r + 'deg'); d.textContent = '?'; board.appendChild(d); });
 
@@ -60,9 +60,6 @@ const gav = root.getElementById('gav'), gbub = root.getElementById('gbub');
 const say = (txt, expr) => { gbub.textContent = txt; gbub.classList.remove('bp'); void gbub.offsetWidth; gbub.classList.add('bp'); gav.innerHTML = full(expr || 'normal'); gav.classList.remove('hop'); void gav.offsetWidth; gav.classList.add('hop'); };
 say('psst… tire la manette !', 'normal');
 window.__avFull = full; window.__chute = CHUTE;
-const openF = () => { if (window.__openFiche) window.__openFiche(); };
-root.getElementById('idc').onclick = openF; gav.onclick = openF;
-let hinted = false; gav.addEventListener('mouseenter', () => { if (!hinted) { hinted = true; gbub.textContent = 'ma carte est dans ma poche, clique !'; gbub.classList.remove('bp'); void gbub.offsetWidth; gbub.classList.add('bp'); } });
 // j'arrive en parachute quand on descend sur la page
 root.getElementById('gchute').innerHTML = CHUTE(61, 139, 322);
 const guide = root.getElementById('guide'); let landed = false;
