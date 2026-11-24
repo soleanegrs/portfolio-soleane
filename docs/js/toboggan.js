@@ -21,7 +21,13 @@
     + '.tour{position:absolute;inset:0;transform-origin:100px 366px}'
     + '.w.walk .av{animation:step .35s ease-in-out infinite}.w.walk .ar{animation:aswing .7s ease-in-out infinite}'
     + '.w.climb .av{animation:climb .45s ease-in-out infinite}@keyframes climb{50%{transform:translateY(-6px) rotate(-4deg)}}'
-    + '.w.climb .ar{animation:reach .45s ease-in-out infinite alternate}@keyframes reach{from{transform:rotate(-20deg)}to{transform:rotate(10deg)}}';
+    + '.w.climb .ar{animation:reach .45s ease-in-out infinite alternate}@keyframes reach{from{transform:rotate(-20deg)}to{transform:rotate(10deg)}}'
+    // bulle rose (même style que sur la page à propos) : c'est l'avatar qui dit le nom des objets survolés
+    + '.bub{position:absolute;left:178px;top:128px;padding:22px 32px 24px;background-color:#F7A8C7;background-image:url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'140\' height=\'140\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'.85\' numOctaves=\'3\'/%3E%3CfeColorMatrix values=\'0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .45 -.08\'/%3E%3C/filter%3E%3Crect width=\'140\' height=\'140\' filter=\'url(%23n)\'/%3E%3C/svg%3E");border-radius:44px;font:23px/1.15 \'Gochi Hand\',cursive;color:#9C2F62;white-space:nowrap;box-shadow:inset 0 -3px 0 rgba(214,110,156,.35),2px 7px 12px rgba(0,0,0,.2);transform:rotate(-3deg);opacity:0;transition:opacity .25s;pointer-events:none;z-index:50}'
+    + '.bub::before{content:\'\';position:absolute;inset:8px;border:2.5px dashed rgba(255,244,249,.95);border-radius:36px;pointer-events:none}'
+    // la pointe de la bulle part vers la gauche, vers le visage de l'avatar
+    + '.bub::after{content:\'\';position:absolute;left:-22px;top:50%;width:28px;height:30px;margin-top:-12px;background:inherit;clip-path:path(\'M28 4 L28 26 Q14 22 0 30 Q12 18 28 4 Z\')}'
+    + '.w.arr .bub.on{opacity:1}.bub.bp{animation:bpop .45s cubic-bezier(.3,1.8,.5,1)}@keyframes bpop{from{transform:scale(.4) rotate(-12deg)}}';
   // toboggan de fete foraine : une tour, et une piste rose qui tourne autour
   var CX = 250, RX = 95, RY = 24, Y0 = 470, Y1 = 794, T0 = Math.PI, T1 = 4 * Math.PI;
   function hp(th) { var f = (th - T0) / (T1 - T0); return [CX + RX * Math.sin(th), Y0 + (Y1 - Y0) * f + RY * Math.cos(th), Math.cos(th)]; }
@@ -59,11 +65,18 @@
     var r = host.attachShadow({ mode: 'open' });
     var P = document.getElementById('P'), P2 = document.getElementById('P2');
     r.innerHTML = '<style>' + CSS + '</style><svg width="0" height="0" style="position:absolute"><defs>' + (P ? P.outerHTML : '') + (P2 ? P2.outerHTML : '') + '</defs></svg>'
-      + SLIDE + TT + '<svg class="zl" id="zl"><line x1="560" y1="-40" x2="250" y2="679" stroke="#1C1B1A" stroke-width="3" stroke-linecap="round" stroke-dasharray="12 9" opacity=".75"/><circle cx="560" cy="-40" r="9" fill="#F47EB3" stroke="#1C1B1A" stroke-width="2"/><circle cx="250" cy="679" r="6" fill="#F47EB3" stroke="#1C1B1A" stroke-width="2"/></svg><div class="w" id="w"><div class="tour" id="tour"><div class="sway"><div class="cb">' + window.__chute(69, 131, 264) + '</div><div class="av" id="av"></div></div></div></div>' + TBF;
+      + SLIDE + TT + '<svg class="zl" id="zl"><line x1="560" y1="-40" x2="250" y2="679" stroke="#1C1B1A" stroke-width="3" stroke-linecap="round" stroke-dasharray="12 9" opacity=".75"/><circle cx="560" cy="-40" r="9" fill="#F47EB3" stroke="#1C1B1A" stroke-width="2"/><circle cx="250" cy="679" r="6" fill="#F47EB3" stroke="#1C1B1A" stroke-width="2"/></svg><div class="w" id="w"><div class="tour" id="tour"><div class="sway"><div class="cb">' + window.__chute(69, 131, 264) + '</div><div class="av" id="av"></div></div></div><div class="bub" id="bub"></div></div>' + TBF;
     var MODE = /tyrolienne/.test(location.search) ? 'zip' : 'tobo', zls = MODE === 'tobo' ? [r.getElementById('tb'), r.getElementById('tt'), r.getElementById('tbf')] : [r.getElementById('zl')], zl = { classList: { add: function (c) { zls.forEach(function (e) { e.classList.add(c); }); }, remove: function (c) { zls.forEach(function (e) { e.classList.remove(c); }); } } }, w = r.getElementById('w'), av = r.getElementById('av'), tour = r.getElementById('tour'), st = 'out', t = null, run = 0;
     // la balade : [deplacement x, y (en px de page), taille, duree, mode]
     // échelle de gauche, puis échelle de droite, et on s'arrête à droite de l'étagère du haut
     var PATH = [[200, 2, .6, 1600, 'walk'], [272, -248, .6, 2200, 'climb'], [940, -248, .6, 3400, 'walk'], [902, -498, .6, 2400, 'climb'], [948, -498, .6, 700, 'walk']];
+    // la bulle : un message d'accueil, puis le nom de l'objet survolé sur l'étagère
+    var bub = r.getElementById('bub'), HELLO = 'psst… survole mes trucs !', cur = '';
+    function say(txt) { if (!txt || txt === cur) return; cur = txt; bub.textContent = txt; bub.classList.add('on'); bub.classList.remove('bp'); void bub.offsetWidth; bub.classList.add('bp'); }
+    function nameOf(o) { var n = o && o.nextElementSibling; return n && n.classList.contains('cname') ? n.innerHTML.replace(/<br\s*\/?>/gi, ' ').replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim() : ''; }
+    function onOver(e) { var o = e.target && e.target.closest && e.target.closest('.curio .cobj'); if (st !== 'arr') return; if (o) { var tx = document.createElement('textarea'); tx.innerHTML = nameOf(o); say(tx.value); } }
+    function onOut(e) { var o = e.target && e.target.closest && e.target.closest('.curio .cobj'); if (!o || st !== 'arr') return; var to = e.relatedTarget && e.relatedTarget.closest && e.relatedTarget.closest('.curio .cobj'); if (to !== o) say(HELLO); }
+    document.addEventListener('mouseover', onOver); document.addEventListener('focusin', onOver); document.addEventListener('mouseout', onOut); document.addEventListener('focusout', onOut);
     function stopTour() { run++; tour.getAnimations().forEach(function (a) { a.cancel(); }); tour.style.transform = ''; w.classList.remove('walk', 'climb'); }
     function startTour() {
       var id = ++run, from = 'translate(0px,0px) scale(1)', i = 0;
@@ -83,7 +96,8 @@
         // on glisse le long de la courbe du toboggan (les pieds suivent la piste)
         go('tobo'); zl.classList.add('on'); host.style.zIndex = '6';
         var an = w.animate(KS, { duration: 2800, delay: 300, easing: 'linear', fill: 'both' });
-        an.onfinish = function () { host.style.zIndex = ''; if (st !== 'tobo') return; an.cancel(); av.innerHTML = window.__avFull('wink'); w.className = 'w arr'; st = 'arr'; setTimeout(function () { zl.classList.remove('on'); }, 900); t = setTimeout(startTour, 1700); };
+        // arrivée en bas du toboggan : plus de montée par les échelles, elle reste là et parle dans sa bulle
+        an.onfinish = function () { host.style.zIndex = ''; if (st !== 'tobo') return; an.cancel(); av.innerHTML = window.__avFull('wink'); w.className = 'w arr'; st = 'arr'; setTimeout(function () { zl.classList.remove('on'); }, 900); say(HELLO); t = setTimeout(function () { if (st === 'arr') av.innerHTML = window.__avFull('normal'); }, 1700); };
         return;
       }
       go('in'); zl.classList.add('on');
