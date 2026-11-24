@@ -9,13 +9,27 @@
     clearInterval(t);
     if (av) av.innerHTML = window.__avFull('wink');
     if (notes) {
-      var COL = ['#FF5B4D', '#3472F6', '#36A96B', '#F21BC9', '#FFB92F'];
+      // mêmes couleurs et inclinaisons que les étiquettes de la bonbonnière (ordinateur)
+      var COL = window.AVATAR.PAL, ROT = [-3, 2.5, -2, 2, -3];
       notes.innerHTML = window.PF_ETIQUETTES.map(function (o, i) {
-        return '<div class="mnote" style="--i: ' + i + '; --c: ' + COL[i % 5] + '; --r: ' + (i % 2 ? 1.5 : -1.5) + 'deg"><span class="mtape"></span>'
+        return '<div class="mnote" style="--i: ' + i + '; --c: ' + COL[i % COL.length] + '; --r: ' + ROT[i % ROT.length] + 'deg"><span class="mtape"></span>'
           + '<span class="mic">' + window.AVATAR.avatar(o.e) + '</span><h3>' + o.t + '</h3><p>' + o.x + '</p></div>';
       }).join('');
     }
     var cible = location.hash && document.getElementById(location.hash.slice(1));
+    // projets : la guirlande de l'ordinateur tournée à la verticale, sur toute la hauteur des cartes
+    var cartes = document.getElementById('m-cards'), garl = cartes && cartes.querySelector('.mgarl');
+    if (garl) {
+      var poserGuirlande = function () {
+        // on prend juste le morceau de guirlande qu'il faut, à 75 % de sa taille (perles bien visibles)
+        var g = garl.querySelector('svg'), H = cartes.offsetHeight + 30, K = 1, h = 120 * K;
+        garl.style.height = H + 'px';
+        g.setAttribute('viewBox', '0 0 ' + Math.min(3550, H / K).toFixed(0) + ' 120');
+        g.setAttribute('width', H); g.setAttribute('height', h);
+        g.style.transform = 'translateX(' + (h / 2).toFixed(1) + 'px) rotate(90deg)';
+      };
+      poserGuirlande(); setTimeout(poserGuirlande, 600); window.addEventListener('resize', poserGuirlande);
+    }
     // à propos : la machine à boules de l'ordinateur ; UN toucher et toutes les étiquettes sortent
     var mz = document.getElementById('m-machine');
     if (mz && notes) {

@@ -57,15 +57,36 @@
         }
         if (mach) mz.appendChild(document.importNode(mach, true));
       }
-      // cartes de projets (dans l'ordre de la guirlande), réduites pour la largeur du téléphone
+      // cartes de projets (dans l'ordre de la guirlande), réduites pour la largeur du téléphone,
+      // chacune avec sa pince rose, accrochées à la guirlande de l'ordinateur tournée à la verticale
       const cards = frag.querySelector('#m-cards');
-      if (cards) accueil.querySelectorAll('button.hcard').forEach((b) => {
-        const c = document.importNode(b, true);
-        c.style.position = 'relative'; c.style.left = '0'; c.style.top = '0';
-        const box = document.createElement('div'); box.className = 'mcard';
-        const inner = document.createElement('div'); inner.className = 'mcardin';
-        inner.appendChild(c); box.appendChild(inner); cards.appendChild(box);
-      });
+      if (cards) {
+        const garl = accueil.querySelector('.grow1 > div > svg');
+        if (garl) {
+          const g = document.importNode(garl, true);
+          g.removeAttribute('style'); g.setAttribute('viewBox', '0 0 3550 120'); g.setAttribute('preserveAspectRatio', 'xMinYMid meet');
+          const gw = document.createElement('div'); gw.className = 'mgarl'; gw.setAttribute('aria-hidden', 'true');
+          gw.appendChild(g); cards.appendChild(gw);   // taille et rotation réglées par js/mobile.js selon la hauteur des cartes
+        }
+        const swings = accueil.querySelectorAll('.swing');
+        const blocs = swings.length ? [...swings] : [...accueil.querySelectorAll('button.hcard')];
+        blocs.forEach((sw) => {
+          const b = sw.matches('button') ? sw : sw.querySelector('button.hcard');
+          if (!b) return;
+          const c = document.importNode(b, true);
+          c.style.position = 'relative'; c.style.left = '0'; c.style.top = '0';
+          const box = document.createElement('div'); box.className = 'mcard';
+          const inner = document.createElement('div'); inner.className = 'mcardin';
+          inner.appendChild(c);
+          const pin = sw.querySelector && sw.querySelector('svg.pin');
+          if (pin) {   // la pince, au milieu du haut de la carte (là où passe la guirlande)
+            const p = document.importNode(pin.parentElement, true);
+            p.classList.add('mpin'); p.style.left = '264px'; p.style.top = '-88px';
+            inner.appendChild(p);
+          }
+          box.appendChild(inner); cards.appendChild(box);
+        });
+      }
       // objets de l'étagère des curiosités, en tuiles avec leur nom en dessous
       const objs = frag.querySelector('#m-objs');
       if (objs) curio.querySelectorAll('button[class*="cobj"]').forEach((b) => {
