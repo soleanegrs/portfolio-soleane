@@ -145,12 +145,16 @@ const resetGame = () => {
   neckBeads.innerHTML = ''; lbl.textContent = 'ma collection : 0 / 5';
   gone.splice(0).forEach((b) => { b.x = 120 + Math.random() * 180; b.y = 140; gB.appendChild(b.el); B.push(b); });
   root.getElementById('gold').classList.remove('show'); root.getElementById('skip').classList.remove('gone');
-  gav.classList.remove('dance'); hinted = false; say('psst… tire la manette !', 'normal');
+  root.getElementById('gold').classList.remove('mini');
+  gav.classList.remove('dance'); say('psst… tire la manette !', 'normal');
 };
 const toast = (t) => { const e = root.getElementById('toast'); e.textContent = t; e.classList.add('on'); setTimeout(() => e.classList.remove('on'), 3200); };
 // le bouton « mon CV » du ticket d'or ouvre le CV (cv/CV-Soleane-Gros.pdf) dans un nouvel onglet
 root.getElementById('mail').onclick = (e) => { e.preventDefault(); if (window.__openLetter) window.__openLetter(); };
-root.querySelector('.tk .x').onclick = () => root.getElementById('gold').classList.remove('show');
+// la croix ne fait pas disparaître le ticket : il se range en petit à droite de la machine, et un clic dessus le rouvre
+const gold = root.getElementById('gold');
+root.querySelector('.tk .x').onclick = (e) => { e.stopPropagation(); gold.classList.remove('show'); void gold.offsetWidth; gold.classList.add('mini'); };
+gold.addEventListener('click', () => { if (!gold.classList.contains('mini')) return; gold.classList.remove('mini'); void gold.offsetWidth; gold.classList.add('show'); });
 
 // tirer la manette (ou simplement cliquer sur la machine)
 let y0 = null, pulled = 0;

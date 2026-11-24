@@ -273,7 +273,7 @@ class Component extends DCLogic {
     this.setState({ lb: L[this.lbIdx].src, lbAlt: L[this.lbIdx].alt });
   }
   /* ---------- Se souvenir de la page (retour depuis Instagram) ---------- */
-  secTops() { return [0, this.bd ? this.bd.offsetTop : 1, this.cn ? this.cn.offsetTop : 2, this.ab ? this.ab.offsetTop : 3]; }
+  secTops() { return [0, this.bd ? this.bd.offsetTop : 1, this.cn ? this.cn.offsetTop : Infinity, this.ab ? this.ab.offsetTop : Infinity]; }   // sections absentes de la page (curiosités, à propos sont sur d'autres pages) : jamais « atteintes »
   saveSpot() {
     try {
       const st = this.state || {};
@@ -763,7 +763,8 @@ class Component extends DCLogic {
       nbClick: () => { if (this.justDragged) return; this.preloadBook(); this.setState({ book: true, bookInl: false, bookFun: false, bookOpen: false, page: 0, turn: null }); this.later(() => this.setState({ bookOpen: true }), 80); },
       heRef: this._refs.he,
       scribCls: hiddenAv ? 'scrib' : 'scrib on',
-      unfold: () => { if (phase !== 'ball') return; this.setState({ phase: 'opening' }); this.later(() => this.startCover(), 1400); this.stopDomino(); this.domStartT = setTimeout(() => this.startDomino(), 1400 + 1950); },
+      // la boule s'ouvre d'un clic n'importe où sur l'écran du début (un seul déclenchement même si le clic touche aussi la boule)
+      unfold: () => { if (phase !== 'ball' || this.unfoldBusy) return; this.unfoldBusy = true; setTimeout(() => { this.unfoldBusy = false; }, 1500); this.setState({ phase: 'opening' }); this.later(() => this.startCover(), 1400); this.stopDomino(); this.domStartT = setTimeout(() => this.startDomino(), 1400 + 1950); },
       goCarnet: () => { if (s.allSeen) this.toCarnet(); },
       abRef: this._refs.ab,
       goAboutPage: () => this.goPage('a-propos.html'),
