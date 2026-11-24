@@ -1,0 +1,122 @@
+/* ============================================================
+   Version téléphone (mobile.html) — dessinée pour 430 px de large
+   (js/app.js met la page à l'échelle de la largeur de l'écran).
+   Ce fichier n'est chargé QUE par mobile.html : le site ordinateur ne change pas.
+   ============================================================ */
+body[data-page=mobile] .mpage{position:relative;padding:96px 0 60px;font-family:'Gochi Hand',cursive;color:#1C1B1A}
+body[data-page=mobile] .msec{position:relative;padding:34px 20px 10px}
+
+/* en-tête : menu à gauche, Instagram / email à droite ; le titre long est retiré (pas la place) */
+body[data-page=mobile] header{padding:14px 14px 22px !important;background:linear-gradient(#F5F0E7 62%,rgba(245,240,231,0))}
+body[data-page=mobile] header .t2{display:none !important}
+body[data-page=mobile] header .pill2{font-size:19px;padding:9px 16px}
+body[data-page=mobile] header nav.pop{width:250px !important}
+
+/* ---------- couverture ---------- */
+.mhero{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;padding:30px 16px 20px}
+.mtitle{display:flex;justify-content:center;flex-wrap:nowrap;gap:0;font-family:'Freckle Face','Gochi Hand',cursive;font-size:70px;line-height:1;-webkit-text-stroke:1.5px #1C1B1A}
+.mtitle span{display:inline-block;transform:rotate(var(--t));filter:url(#P);animation:mbob 2.6s ease-in-out infinite}
+.mtitle span:nth-child(2n){animation-delay:-.7s}.mtitle span:nth-child(3n){animation-delay:-1.4s}
+@keyframes mbob{50%{transform:rotate(var(--t)) translateY(-5px)}}
+.myear{position:relative;margin-top:-6px;align-self:flex-end;margin-right:26px;padding:4px 14px 6px;background:#FFB92F;font-family:'Lilita One',cursive;font-size:26px;color:#1C1B1A;transform:rotate(-6deg);box-shadow:3px 4px 0 rgba(0,0,0,.18)}
+.msub{margin:14px 0 0;font-size:22px;line-height:1.25}
+.mav{width:150px;height:283px;margin:10px auto 0;filter:drop-shadow(3px 8px 6px rgba(0,0,0,.25))}
+.mav svg{width:100%;height:100%;overflow:visible}
+.mhello{margin:4px 0 14px;font-size:22px;color:#F21BC9;transform:rotate(-2deg)}
+
+/* ---------- titres de partie (étoile comme sur l'ordinateur) ---------- */
+.mh2{position:relative;width:300px;height:150px;margin:0 auto 4px;display:flex;align-items:center;justify-content:center}
+.mburst{position:absolute;inset:0;background:var(--s);clip-path:polygon(50% 0,61% 22%,84% 6%,79% 33%,100% 40%,82% 56%,96% 82%,70% 76%,62% 100%,48% 80%,30% 98%,28% 74%,2% 84%,16% 58%,0 38%,22% 32%,14% 6%,38% 20%)}
+.mburst::after{content:'';position:absolute;inset:9px;background:var(--c);clip-path:inherit}
+.mh2t{position:relative;font-family:'Freckle Face','Gochi Hand',cursive;font-weight:400;font-size:38px;line-height:.95;text-align:center;transform:rotate(-5deg)}
+.mtip{margin:0 0 18px;text-align:center;font-size:19px;color:#6b655d}
+
+/* ---------- cartes de projets (reprises d'index.html, réduites) ---------- */
+.mcards{display:flex;flex-direction:column;align-items:center;gap:26px}
+.mcard{position:relative;width:390px;height:274px}
+.mcard:nth-child(2n){transform:rotate(1.2deg)}.mcard:nth-child(2n+1){transform:rotate(-1deg)}
+.mcardin{position:absolute;left:0;top:0;width:620px;height:430px;transform:scale(.629);transform-origin:0 0}
+.mcardin .hcard{position:relative !important}
+
+/* ---------- objets des curiosités (repris de curiosites.html) en tuiles ---------- */
+.mgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
+.mtile{position:relative;height:220px;box-sizing:border-box;border:0 solid transparent;border-image:url("../assets/fiche-feuille.webp") 400 / 34px / 8px round}
+.mtile:nth-child(2n){transform:rotate(1.5deg)}.mtile:nth-child(2n+1){transform:rotate(-1.5deg)}
+/* l'objet garde sa taille d'origine et il est réduit (--k) pour tenir dans la tuile */
+.mstage{position:absolute;left:50%;bottom:58px;transform:translateX(-50%) scale(var(--k));transform-origin:50% 100%}
+.mtile .cobj{position:relative !important;display:block}
+.mlab{position:absolute;left:6px;right:6px;bottom:12px;z-index:5;font-family:'Freckle Face','Gochi Hand',cursive;font-size:22px;line-height:1;text-align:center}
+
+/* ---------- à propos : les 5 étiquettes empilées ---------- */
+.mnotes{display:flex;flex-direction:column;gap:22px;padding:6px 6px 0}
+.mnote{position:relative;padding:22px 20px 18px;transform:rotate(var(--r))}
+.mnote::before{content:'';position:absolute;inset:0;z-index:-1;background:#FBF8F1;box-shadow:3px 10px 16px rgba(0,0,0,.18);filter:url(#P2)}
+.mnote .mtape{position:absolute;left:38%;top:-11px;width:26%;height:22px;background:var(--c);opacity:.6;transform:rotate(-4deg)}
+.mnote .mic{position:absolute;right:-8px;top:-26px;width:62px;height:62px}
+.mnote .mic svg{width:100%;height:100%;overflow:visible}
+.mnote h3{margin:0 50px 6px 0;font-family:'Lilita One',cursive;font-weight:400;font-size:22px;letter-spacing:1px;text-transform:uppercase;color:var(--c);line-height:1.05}
+.mnote p{margin:0;font-size:19px;line-height:1.28}
+.mnote p b{font-family:'Lilita One',cursive;font-weight:400;font-size:.92em}
+.mnote p b i{color:var(--c)}
+
+.mcontact{display:flex;flex-direction:column;align-items:center;gap:14px;margin-top:34px}
+.mcontt{margin:0 0 4px;font-family:'Freckle Face','Gochi Hand',cursive;font-size:28px;color:#3472F6;text-align:center}
+.mcontact .pill2{min-width:270px;text-align:left}
+.mordi{display:block;margin:34px auto 0;text-align:center;font-size:18px;color:#6b655d}
+
+/* ============================================================
+   Fenêtres communes (fiches projets, carnet, vidéos, affiches, pellicules, lettre, contact)
+   dessinées pour l'ordinateur : on les remet en une colonne pour le téléphone.
+   ============================================================ */
+/* fiche projet */
+body[data-page=mobile] .psheet{width:auto !important;max-width:none !important;margin:70px 8px 40px !important;padding:46px 22px 36px !important}
+body[data-page=mobile] .psheet [style*="grid-template-columns"]{grid-template-columns:minmax(0,1fr) !important;gap:22px !important}
+body[data-page=mobile] .psheet [style*="flex: 1 1 480px"],body[data-page=mobile] .psheet [style*="flex: 0 0 260px"]{flex-basis:auto !important}
+body[data-page=mobile] .psheet h2{font-size:58px !important}
+body[data-page=mobile] .psheet h3{font-size:25px !important}
+body[data-page=mobile] .psheet p{font-size:20px !important}
+body[data-page=mobile] .psheet .gal3,body[data-page=mobile] .psheet .gal2{grid-template-columns:minmax(0,1fr) minmax(0,1fr) !important;gap:12px}
+body[data-page=mobile] .psheet .gal2[style*="width"],body[data-page=mobile] .psheet .gal3[style*="width"]{width:100% !important}
+body[data-page=mobile] .psheet img.gph[style*="width: calc"]{width:100% !important}
+body[data-page=mobile] .psheet img[style*="margin-top: -"]{margin-top:0 !important}
+body[data-page=mobile] .psheet .colv>.gph{max-width:100%}
+body[data-page=mobile] .psheet .nstats,body[data-page=mobile] .psheet .nlev,body[data-page=mobile] .psheet .nsteps{grid-template-columns:minmax(0,1fr) !important}
+body[data-page=mobile] .psheet .nfeat,body[data-page=mobile] .psheet .cdc{grid-template-columns:minmax(0,1fr) minmax(0,1fr) !important}
+body[data-page=mobile] .psheet .capg{display:flex !important;flex-direction:column;gap:20px}
+body[data-page=mobile] .psheet .capg figure{margin:0;width:auto !important}
+body[data-page=mobile] .psheet .tmb{position:relative;left:auto !important;right:auto !important;top:auto !important;bottom:auto !important;display:inline-block;margin:10px 6px 0;width:150px}
+body[data-page=mobile] .psheet .galtmb{padding-bottom:0}
+body[data-page=mobile] .psheet .galk{padding-bottom:0}
+body[data-page=mobile] .psheet .probl .problq{font-size:23px !important}
+/* boutons « retour aux projets » / « projet suivant » : l'un sous l'autre */
+body[data-page=mobile] .psheet [style*="justify-content: space-between"]{flex-direction:column;gap:16px;margin-top:40px !important}
+/* le petit dessin du projet en haut de la fiche : plus discret */
+body[data-page=mobile] .psheet [style*="flex: 0 0 260px"]{width:180px !important;height:150px !important;align-self:center}
+
+/* fenêtres posées au centre (contact, lettre, vidéos, affiches, pellicules) : pleine largeur */
+body[data-page=mobile] .bgclose .pop{width:calc(100% - 24px) !important;max-width:none !important;padding-left:22px !important;padding-right:22px !important}
+body[data-page=mobile] .bgclose .pop h2{font-size:46px !important}
+body[data-page=mobile] .bgclose .pop p{font-size:21px !important}
+body[data-page=mobile] .cchoix .pill2{white-space:normal}
+
+/* vidéos : les petites animations sur deux colonnes */
+body[data-page=mobile] .vidrow{flex-wrap:wrap;justify-content:center;gap:14px 12px}
+body[data-page=mobile] .vidrow .vidf{width:46% !important;transform:none !important}
+body[data-page=mobile] .vidsub{font-size:20px;text-align:center}
+
+/* pellicules : 2 par rangée au lieu de 4 en ligne */
+body[data-page=mobile] .rollrow{display:grid;grid-template-columns:1fr 1fr;gap:46px 26px;justify-items:center;margin-bottom:30px}
+body[data-page=mobile] .rollhint{margin-top:10px;text-align:center}
+/* pellicule déroulée : titre au-dessus, bobine plus petite, photos sur toute la largeur */
+body[data-page=mobile] .filmstage{width:calc(100% - 20px);margin-top:40px}
+body[data-page=mobile] .filmhead{flex-direction:column;align-items:flex-start;gap:12px;padding-right:56px}
+body[data-page=mobile] .filmttl{font-size:24px;line-height:1.15}
+body[data-page=mobile] .filmcan{width:70px;height:94px}
+body[data-page=mobile] .filmrow .filmscroll{flex:1;min-width:0}
+body[data-page=mobile] .bigroll .brl1{white-space:normal;display:block;width:170px;text-align:center;line-height:1.05}
+
+/* carnet : plus grand (il tient sur la largeur, les pages restent lisibles en zoomant sur une photo) */
+body[data-page=mobile] .pop[style*="aspect-ratio: 1000 / 640"]{width:calc(100% - 16px) !important}
+
+/* croix de fermeture toujours atteignable en haut à droite */
+body[data-page=mobile] .xstitch{right:12px !important;top:64px !important}

@@ -1,4 +1,13 @@
 /* page a propos : la bonbonniere, isolee dans un shadow DOM pour que le rendu du site n'y touche pas */
+/* textes des 5 étiquettes « à propos » : utilisés par la bonbonnière ET par la version téléphone (mobile.html).
+   t = titre, x = texte (gras avec <b>), e = expression de l'avatar sur l'étiquette */
+window.PF_ETIQUETTES = [
+  { t: 'qui suis-je', e: 'wink', x: 'Je suis un peu comme un citron caviar : <b><i>« Pétillante, surprenante et pleine de pépins créatifs ! »</i></b>. J’aime expérimenter et sortir des sentiers battus. On me découvre petit à petit, au fil de mes idées et de mes <b>multiples facettes</b>.' },
+  { t: 'ce que je cherche', e: 'think', x: 'Je recherche un <b>stage en design d’espace, scénographie</b> ou <b>design immersif</b>, au sein d’une agence ou d’un studio qui laisse place à la créativité, à l’expérimentation et aux idées audacieuses.' },
+  { t: 'ma vision', e: 'star', x: 'Créer des univers qui ne se regardent pas seulement, mais qui se ressentent. Jouer avec les <b>contrastes</b>, la <b>couleur</b> et <b>l’étrangeté</b> pour surprendre, intriguer et éveiller <b>l’imagination</b>.' },
+  { t: 'ce qui me nourrit', e: 'love', x: '• les couleurs, les matières et les textures<br>• les contrastes et les associations inattendues<br>• les univers étranges, immersifs et imaginaires<br>• la curiosité, la recherche et la découverte<br>• tout ce qui sort de l’ordinaire et <b>bouscule les perceptions</b>' },
+  { t: 'ce qui me tient à cœur', e: 'happy', x: 'Créer des espaces qui racontent des histoires sans imposer leur interprétation. Laisser place à la curiosité, à <b>l’émotion</b> et à l’imagination de chacun, tout en gardant cette <b>spontanéité créative propre à l’enfance</b>.' }
+];
 (function () {
   function mount(host) {
     if (host.shadowRoot) return;
@@ -11,13 +20,8 @@ const OBJ = {
   loupe: '<svg viewBox="0 0 120 120"><circle cx="50" cy="50" r="32" fill="#DDEFF8" stroke="#3472F6" stroke-width="10"/><path d="M38 40 Q46 30 58 32" stroke="#fff" stroke-width="6" fill="none" stroke-linecap="round"/><rect x="74" y="70" width="16" height="42" rx="8" fill="#FF5B4D" transform="rotate(-45 82 91)"/></svg>',
   palette: '<svg viewBox="0 0 120 120"><path d="M60 12 C28 12 10 36 12 62 C14 92 38 108 58 104 C70 102 66 90 74 86 C84 82 100 92 106 74 C114 46 92 12 60 12 Z" fill="#F2D6A8"/><circle cx="40" cy="40" r="10" fill="#FF5B4D"/><circle cx="66" cy="32" r="10" fill="#FFB92F"/><circle cx="88" cy="50" r="10" fill="#36A96B"/><circle cx="34" cy="70" r="10" fill="#3472F6"/><circle cx="56" cy="84" r="9" fill="#F47EB3"/></svg>'
 };
-const INFO = [
-  { t: 'qui suis-je', x: 'Je suis un peu comme un citron caviar : <b><i>« Pétillante, surprenante et pleine de pépins créatifs ! »</i></b>. J’aime expérimenter et sortir des sentiers battus. On me découvre petit à petit, au fil de mes idées et de mes <b>multiples facettes</b>.', ic: () => avatar('wink') },
-  { t: 'ce que je cherche', x: 'Je recherche un <b>stage en design d’espace, scénographie</b> ou <b>design immersif</b>, au sein d’une agence ou d’un studio qui laisse place à la créativité, à l’expérimentation et aux idées audacieuses.', ic: () => avatar('think') },
-  { t: 'ma vision', x: 'Créer des univers qui ne se regardent pas seulement, mais qui se ressentent. Jouer avec les <b>contrastes</b>, la <b>couleur</b> et <b>l’étrangeté</b> pour surprendre, intriguer et éveiller <b>l’imagination</b>.', ic: () => avatar('star') },
-  { t: 'ce qui me nourrit', x: '• les couleurs, les matières et les textures<br>• les contrastes et les associations inattendues<br>• les univers étranges, immersifs et imaginaires<br>• la curiosité, la recherche et la découverte<br>• tout ce qui sort de l’ordinaire et <b>bouscule les perceptions</b>', ic: () => avatar('love') },
-  { t: 'ce qui me tient à cœur', x: 'Créer des espaces qui racontent des histoires sans imposer leur interprétation. Laisser place à la curiosité, à <b>l’émotion</b> et à l’imagination de chacun, tout en gardant cette <b>spontanéité créative propre à l’enfance</b>.', ic: () => avatar('happy') }
-];
+// les 5 étiquettes : textes partagés avec la version téléphone (window.PF_ETIQUETTES, défini plus bas)
+const INFO = window.PF_ETIQUETTES.map((o) => ({ t: o.t, x: o.x, ic: () => avatar(o.e) }));
 // emplacements des etiquettes sur le tableau
 const SLOTS = [{ x: 10, y: -20, r: -3 }, { x: 285, y: 0, r: 2.5 }, { x: 560, y: -34, r: -2 }, { x: 60, y: 262, r: 2 }, { x: 340, y: 276, r: -3 }];
 const board = root.getElementById('board');

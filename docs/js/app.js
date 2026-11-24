@@ -3,9 +3,11 @@
    proportionnellement pour que chaque page tienne entière dans l'écran. */
 (function () {
   var DESIGN_W = 1440, DESIGN_H = 900;
+  // version téléphone (mobile.html) : dessinée pour 430 px de large, à l'échelle de la largeur de l'écran
+  var MOBILE = document.body.dataset.page === 'mobile';
   var app = document.getElementById('app');
   function fit() {
-    var s = Math.min(1, window.innerWidth / DESIGN_W, window.innerHeight / DESIGN_H);
+    var s = MOBILE ? Math.min(1.25, window.innerWidth / 430) : Math.min(1, window.innerWidth / DESIGN_W, window.innerHeight / DESIGN_H);
     var w = window.innerWidth / s, h = window.innerHeight / s;
     window.__S = s;
     app.style.cssText = 'position:absolute;left:0;top:0;transform-origin:0 0;width:' + w + 'px;height:' + h + 'px;transform:scale(' + s + ')';
@@ -261,6 +263,13 @@ class Component extends DCLogic {
   /* ---------- Navigation entre les 3 pages ---------- */
   goPage(url) {
     this.setState({ menu: false, open: null, book: false, bookOpen: false, cab: null, lb: null, vlb: null });
+    if (PAGE === 'mobile') {
+      // version téléphone : tout est sur une seule page, on fait défiler jusqu'à la bonne partie
+      const id = /curiosites/.test(url) ? 'm-curio' : /a-propos/.test(url) ? 'm-apropos' : /projets/.test(url) ? 'm-projets' : 'm-debut';
+      const el = document.getElementById(id);
+      if (el && this.sc) this.sc.scrollTo({ top: Math.max(0, el.offsetTop - 70), behavior: 'smooth' });
+      return;
+    }
     if (location.pathname.split('/').pop() === url) return;
     this.saveSpot();
     window.location.href = url;
