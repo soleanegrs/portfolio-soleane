@@ -94,7 +94,7 @@ class Component extends DCLogic {
       }, true);
       document.addEventListener('keydown', (e) => {
         const s0 = this.state || {};
-        if (e.key === 'Escape') { if (s0.vlb) this.setState({ vlb: null }); else if (s0.lb) this.setState({ lb: null }); else if (s0.cab) this.setState({ cab: s0.cab === 'film' ? 'rolls' : null }); else if (s0.book) this.setState({ book: false, bookOpen: false }); else if (s0.open) this.setState({ open: null }); else if (s0.menu) this.setState({ menu: false }); return; }
+        if (e.key === 'Escape') { if (s0.vlb) this.setState({ vlb: null }); else if (s0.lb) this.setState({ lb: null }); else if (s0.cab) this.setState({ cab: s0.cab === 'film' ? 'rolls' : null }); else if (s0.book) this.closeBookAnim(); else if (s0.open) this.setState({ open: null }); else if (s0.menu) this.setState({ menu: false }); return; }
         if (s0.lb && (e.key === 'ArrowRight' || e.key === 'ArrowLeft') && this.lbList && this.lbList.length > 1) {
           e.preventDefault(); e.stopPropagation();
           const n = this.lbList.length;
@@ -307,20 +307,37 @@ class Component extends DCLogic {
     const v = (n) => ((f.elements[n] || {}).value || '').trim();
     const data = { nom: v('nom'), email: v('email'), sujet: v('sujet'), message: v('message'), _subject: 'Portfolio : ' + v('sujet') + ' (' + v('nom') + ')', _replyto: v('email'), _template: 'box', _captcha: 'false' };
     this.letterOk = null;
-    this.setState({ letter: 'fly', letterMsg: 'envoyé ! ✈' });
-    try {
-      fetch('https://formsubmit.co/ajax/' + MY_EMAIL, { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(data) })
-        .then((r) => r.json()).then((j) => { this.letterOk = !!j && (j.success === true || j.success === 'true'); if (!this.letterOk) console.warn('FormSubmit :', j && j.message); })
-        .catch((err) => { this.letterOk = false; console.warn('FormSubmit injoignable :', err); });
-    } catch (e) { this.letterOk = false; }
-    this.later(() => {
-      // si le service d'envoi n'a pas répondu « ok », on ouvre la messagerie avec la lettre déjà écrite
-      if (this.letterOk === false) {
-        const body = data.message + '\n\n— ' + data.nom + ' (' + data.email + ')';
-        window.location.href = 'mailto:' + MY_EMAIL + '?subject=' + encodeURIComponent(data._subject) + '&body=' + encodeURIComponent(body);
+    this.setState({ letter: 'fly', letterMsg: 'envoi en cours… ✈' });
+    // on attend la VRAIE réponse du service d'envoi (12 s max) : plus de « envoyé ! » si rien n'est parti
+    const t0 = Date.now();
+    const ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+    const tm = setTimeout(() => { if (ctrl) ctrl.abort(); }, 8000);
+    const done = (ok, why) => {
+      clearTimeout(tm);
+      if (this.letterOk !== null) return;
+      this.letterOk = ok;
+      if (!ok) console.warn('Réponse du service d’envoi :', why);
+      const wait = Math.max(0, 3400 - (Date.now() - t0));
+      // FormSubmit répond parfois par une erreur (522) alors que le mail est bien parti (test du 24/11) :
+      // on ne propose la messagerie que si le visiteur est vraiment hors connexion, pour éviter les messages en double
+      if (ok || navigator.onLine !== false) {
+        this.setState({ letterMsg: 'envoyé ! ✈' });
+        this.later(() => this.setState({ open: null, letter: null }), wait);
+      } else {
+        // le service d'envoi ne répond pas : on ouvre la messagerie avec la lettre déjà écrite
+        this.setState({ letterMsg: 'oups, la poste est en grève… ta messagerie s’ouvre avec ta lettre ✉' });
+        this.later(() => {
+          const body = data.message + '\n\n— ' + data.nom + ' (' + data.email + ')';
+          window.location.href = 'mailto:' + MY_EMAIL + '?subject=' + encodeURIComponent(data._subject) + '&body=' + encodeURIComponent(body);
+          this.later(() => this.setState({ open: null, letter: null }), 1500);
+        }, Math.max(wait, 2200));
       }
-      this.setState({ open: null, letter: null });
-    }, 3400);
+    };
+    try {
+      fetch('https://formsubmit.co/ajax/' + MY_EMAIL, { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(data), signal: ctrl ? ctrl.signal : undefined })
+        .then((r) => r.json()).then((j) => { const ok = !!j && (j.success === true || j.success === 'true'); done(ok, j && j.message); })
+        .catch((err) => done(false, err));
+    } catch (e) { done(false, e); }
   }
   /* ---------- Titre PORTFOLIO : le I tombe, le O roule, effet domino ---------- */
   stopDomino() {
@@ -528,11 +545,21 @@ class Component extends DCLogic {
     if (this.bookPre) return;
     this.bookPre = (this.bookImgs || []).map((src) => { const im = new Image(); im.decoding = 'async'; im.src = src; if (im.decode) im.decode().catch(() => {}); return im; });
   }
+  /* fermer le carnet en animation : la page de droite se rabat sur la gauche et montre le dos du carnet,
+     puis le carnet fermé disparaît en fondu (la couverture de devant ne bouge pas) */
+  closeBookAnim() {
+    const s = this.state || {};
+    if (!s.book || s.bookClosing) return;
+    if (!s.bookOpen || s.turn) { this.setState({ book: false, bookOpen: false, turn: null, turnTo: null }); return; }
+    this.setState({ bookClosing: true });
+    this.later(() => this.setState({ book: false, bookOpen: false, bookClosing: false }), 1400);
+  }
   bookTurn(dir) {
     const s = this.state || {};
     if (s.turn) return;
     const page = s.page || 0;
-    if (dir === 'next' && page >= (this.spLen || 5) - 1) return;
+    // dernière double page : cliquer à droite (ou sur la flèche suivante) referme le carnet
+    if (dir === 'next' && page >= (this.spLen || 5) - 1) { this.closeBookAnim(); return; }
     if (dir === 'prev' && page <= 0) return;
     this.bookGo(page + (dir === 'next' ? 1 : -1));
   }
@@ -586,8 +613,8 @@ class Component extends DCLogic {
     // carnet : double page 0 = page vide + sommaire, puis une double page par rubrique
     // carnet : double page 0 = page vide + sommaire, puis les rubriques (une photo par page)
     const SECTIONS = [
-      { label: 'sketch & croquis', col: '#FF5B4D', imgs: ['assets/croquis-01.webp', 'assets/croquis-02.png', 'assets/croquis-03.png', 'assets/croquis-04.webp', 'assets/croquis-05.webp', 'assets/croquis-06.webp', 'assets/croquis-09.webp', 'assets/croquis-08.webp', 'assets/croquis-07.webp'] },
       { label: 'perspectives', col: '#3472F6', imgs: ['assets/persp-1.jpg', 'assets/persp-2.jpg', 'assets/persp-3.jpg', 'assets/persp-4.jpg', 'assets/persp-5.jpg', 'assets/persp-6.jpg'] },
+      { label: 'sketch & croquis', col: '#FF5B4D', imgs: ['assets/croquis-01.webp', 'assets/croquis-02.png', 'assets/croquis-03.png', 'assets/croquis-04.webp', 'assets/croquis-05.webp', 'assets/croquis-06.webp', 'assets/croquis-09.webp', 'assets/croquis-08.webp', 'assets/croquis-07.webp'] },
       { label: 'expériences', col: '#F47EB3', imgs: ['assets/exp-1.jpg', 'assets/exp-2.jpg', 'assets/exp-3.jpg', 'assets/exp-4.jpg', 'assets/exp-5.jpg', 'assets/exp-6.jpg', 'assets/affiche-noir-rouge.jpg'] }
     ];
     const pages = [], firstPage = [];
@@ -601,11 +628,12 @@ class Component extends DCLogic {
     });
     if (pages.length % 2) pages.push({ kind: 'blank', bgc: lastCol });
     pages.forEach((pg, i) => { if (!pg.kind) pg.num = String(i + 1); });
-    const raw = [[{ kind: 'blank' }, { kind: 'toc' }]];
+    // première double page : à gauche, l'intérieur rouge de la couverture (comme un vrai carnet), à droite le sommaire
+    const raw = [[{ kind: 'blank', inside: true }, { kind: 'toc' }]];
     for (let i = 0; i < pages.length; i += 2) raw.push([pages[i], pages[i + 1]]);
     // papier teinté de la couleur de la rubrique (un voile léger sur le crème du carnet)
     const tint = (hex, a) => { const c = parseInt(hex.slice(1), 16), base = [245, 240, 231]; return 'rgb(' + [(c >> 16) & 255, (c >> 8) & 255, c & 255].map((v, i) => Math.round(base[i] + (v - base[i]) * a)).join(', ') + ')'; };
-    const SP = raw.map((sp) => sp.map((p) => Object.assign({ tag: '', title: '', col: '#1C1B1A', num: '', txt: '' }, p, { isPage: !p.kind, isToc: p.kind === 'toc', hasImg: !!p.img, ph: p.img || p.kind ? '' : '[photo]', bg: p.bgc ? tint(p.bgc, 0.16) : '#F5F0E7' })));
+    const SP = raw.map((sp) => sp.map((p) => Object.assign({ tag: '', title: '', col: '#1C1B1A', num: '', txt: '' }, p, { isPage: !p.kind, isToc: p.kind === 'toc', hasImg: !!p.img, ph: p.img || p.kind ? '' : '[photo]', bg: p.inside ? '#B8141D' : (p.bgc ? tint(p.bgc, 0.16) : '#F5F0E7') })));
     this.spLen = SP.length;
     this.bookImgs = [].concat.apply([], SECTIONS.map((x) => x.imgs));
     this.spFirst = firstPage;
@@ -746,7 +774,8 @@ class Component extends DCLogic {
       row2Wheel: (e) => { const d = e.deltaX || (e.shiftKey ? e.deltaY : 0); if (this.strip && Math.abs(d) > 0) { this.userUntil = Date.now() + 300; this.strip.scrollLeft += d; } },
       row2Ref: this._refs.row2, cnRef: this._refs.cn, letterRef: this._refs.letter,
       saveSpot: () => this.saveSpot(),
-      openInsta: (e) => { this.saveSpot(); if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) { if (e && e.preventDefault) e.preventDefault(); const t0 = Date.now(); window.location.href = 'instagram://user?username=soleane_gros'; setTimeout(() => { if (!document.hidden && Date.now() - t0 < 2500) window.location.href = 'https://www.instagram.com/soleane_gros/'; }, 900); } },
+      // Instagram s'ouvre toujours dans un nouvel onglet (sur téléphone, le lien ouvre l'appli si elle est installée) : le site reste ouvert derrière
+      openInsta: () => { this.saveSpot(); },
       openLetter: () => this.setState({ open: 'letter', menu: false, letter: null }),
       isLetter: s.open === 'letter',
       letterCls: 'lett' + (s.letter === 'fly' ? ' fly' : ''),
@@ -760,7 +789,7 @@ class Component extends DCLogic {
       goCurio: () => { this.setState({ menu: false, open: null, book: false, bookOpen: false, cab: null, lb: null, allSeen: true }); setTimeout(() => this.toCarnet(), 60); },
       goStart: refold, goAbout: () => this.goPage('a-propos.html'), goProjects: toProjects,
       goLabo: () => { this.setState({ menu: false, open: null, book: false, bookOpen: false, cab: null, lb: null, book: true, bookInl: false, bookFun: false, page: 0, turn: null }); this.later(() => this.setState({ bookOpen: true }), 80); },
-      goContact: () => this.setState({ menu: false, open: null, book: false, bookOpen: false, cab: null, lb: null, open: 'letter', letter: null }),
+      goContact: () => this.setState({ menu: false, open: null, book: false, bookOpen: false, cab: null, lb: null, open: 'contact', letter: null }),
       hiIn: () => this.setState({ hInsta: true }), hiOut: () => this.setState({ hInsta: false }),
       hbIn: () => this.setState({ hBack: true }), hbOut: () => this.setState({ hBack: false }),
       stripRef: this._refs.strip,
@@ -849,7 +878,8 @@ class Component extends DCLogic {
           ...(() => {
             const POS = [
               { src: 'assets/affiche-reperku.jpg', alt: 'Affiche du festival Reperku Sound, 25-26-27 avril 2026', r: -1, w: 'min(460px, 36vw)' },
-              { src: 'assets/affiche-charlie.webp', alt: 'Affiche de Charlie and the Chocolate Factory', r: -1.5, w: 'min(430px, 34vw)' }
+              { src: 'assets/affiche-charlie.webp', alt: 'Affiche de Charlie and the Chocolate Factory', r: -1.5, w: 'min(430px, 34vw)' },
+              { src: 'assets/affiche-charlie-violet.jpg', alt: 'Affiche violette de Charlie and the Chocolate Factory : la silhouette de Willy Wonka assis devant l’usine, entre des sucres d’orge géants', r: 1.2, w: 'min(430px, 34vw)' }
             ];
             const n = POS.length, pi = (((s.posI || 0) % n) + n) % n;
             return { poster: Object.assign({ n: (pi + 1) + ' / ' + n, w: 'min(360px, 30vw)' }, POS[pi]), posPrev: () => this.setState({ posI: pi - 1 }), posNext: () => this.setState({ posI: pi + 1 }) };
@@ -879,9 +909,9 @@ class Component extends DCLogic {
       lbNext: this._lbNext || (this._lbNext = (e) => { if (e) e.stopPropagation(); this.lbStep(1); }),
       closeLb: () => this.setState({ lb: null }),
       bgCloseLb: (e) => { if (e && e.target === e.currentTarget) this.setState({ lb: null }); },
-      bookInlCls: s.bookInl ? ' inl' : '', bookInl: !!s.bookFun, bookNotInl: !s.bookFun,
-      nbVars: s.nb ? ('--nbx: ' + s.nb.x.toFixed(1) + 'px; --nby: ' + s.nb.y.toFixed(1) + 'px; --nbs: ' + s.nb.s.toFixed(3) + '; --nbsh: ' + s.nb.shift.toFixed(1) + 'px') : '', bookPopCls: s.bookInl && s.bookOpen ? ' isopen' : '', bigNbCls: s.book && s.bookInl ? ' away' : '',
-      bgCloseBook: (e) => { if (e && e.target === e.currentTarget) this.setState({ book: false, bookOpen: false }); },
+      bookInlCls: (s.bookInl ? ' inl' : '') + (s.bookClosing ? ' bkcl' : ''), bookInl: !!s.bookFun, bookNotInl: !s.bookFun,
+      nbVars: s.nb ? ('--nbx: ' + s.nb.x.toFixed(1) + 'px; --nby: ' + s.nb.y.toFixed(1) + 'px; --nbs: ' + s.nb.s.toFixed(3) + '; --nbsh: ' + s.nb.shift.toFixed(1) + 'px') : '', bookPopCls: (s.bookInl && s.bookOpen ? ' isopen' : '') + (s.bookClosing ? ' bkclosing' : ''), bigNbCls: s.book && s.bookInl ? ' away' : '',
+      bgCloseBook: (e) => { if (e && e.target === e.currentTarget) this.closeBookAnim(); },
       myEmail: MY_EMAIL,
       outlookHref: 'https://outlook.live.com/mail/0/deeplink/compose?to=' + encodeURIComponent(MY_EMAIL) + '&subject=' + encodeURIComponent('Bonjour Soléane !'),
       mailHref: 'mailto:' + MY_EMAIL + '?subject=' + encodeURIComponent('Bonjour Soléane !'),
@@ -904,13 +934,13 @@ class Component extends DCLogic {
         }
         this.preloadBook();
         this.setState({ book: true, bookInl: false, bookFun: true, bookOpen: false, page: 0, turn: null, nb: nb }); this.later(() => this.setState({ bookOpen: true }), 80); },
-      closeBook: () => this.setState({ book: false, bookOpen: false }),
+      closeBook: () => this.closeBookAnim(),
       nextPage: () => this.bookTurn('next'), prevPage: () => this.bookTurn('prev'),
       bk: {
         leftCls: s.bookOpen ? 'lpage on' : 'lpage',
         coverCls: s.bookOpen ? 'cover opened' : 'cover',
         turning: !!turn, leafCls: 'leaf ' + (turn || ''),
-        prevOp: page > 0 ? 1 : 0.35, nextOp: page < SP.length - 1 ? 1 : 0.35,
+        prevOp: page > 0 ? 1 : 0.35, nextOp: 1, isLast: page >= SP.length - 1, rTitle: page >= SP.length - 1 ? 'fermer le carnet' : 'page suivante',
         label: (page + 1) + ' / ' + SP.length
       },
       pl: bkLeft, pr: bkRight, lf: leafFront, lb2: leafBack,

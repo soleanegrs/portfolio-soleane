@@ -62,7 +62,8 @@
       + SLIDE + TT + '<svg class="zl" id="zl"><line x1="560" y1="-40" x2="250" y2="679" stroke="#1C1B1A" stroke-width="3" stroke-linecap="round" stroke-dasharray="12 9" opacity=".75"/><circle cx="560" cy="-40" r="9" fill="#F47EB3" stroke="#1C1B1A" stroke-width="2"/><circle cx="250" cy="679" r="6" fill="#F47EB3" stroke="#1C1B1A" stroke-width="2"/></svg><div class="w" id="w"><div class="tour" id="tour"><div class="sway"><div class="cb">' + window.__chute(69, 131, 264) + '</div><div class="av" id="av"></div></div></div></div>' + TBF;
     var MODE = /tyrolienne/.test(location.search) ? 'zip' : 'tobo', zls = MODE === 'tobo' ? [r.getElementById('tb'), r.getElementById('tt'), r.getElementById('tbf')] : [r.getElementById('zl')], zl = { classList: { add: function (c) { zls.forEach(function (e) { e.classList.add(c); }); }, remove: function (c) { zls.forEach(function (e) { e.classList.remove(c); }); } } }, w = r.getElementById('w'), av = r.getElementById('av'), tour = r.getElementById('tour'), st = 'out', t = null, run = 0;
     // la balade : [deplacement x, y (en px de page), taille, duree, mode]
-    var PATH = [[200, 2, .6, 1600, 'walk'], [272, -248, .6, 2200, 'climb'], [940, -248, .6, 3400, 'walk'], [902, -498, .6, 2400, 'climb'], [610, -498, .6, 1800, 'walk']];
+    // échelle de gauche, puis échelle de droite, et on s'arrête à droite de l'étagère du haut
+    var PATH = [[200, 2, .6, 1600, 'walk'], [272, -248, .6, 2200, 'climb'], [940, -248, .6, 3400, 'walk'], [902, -498, .6, 2400, 'climb'], [948, -498, .6, 700, 'walk']];
     function stopTour() { run++; tour.getAnimations().forEach(function (a) { a.cancel(); }); tour.style.transform = ''; w.classList.remove('walk', 'climb'); }
     function startTour() {
       var id = ++run, from = 'translate(0px,0px) scale(1)', i = 0;
@@ -81,7 +82,7 @@
       if (MODE === 'tobo') {
         // on glisse le long de la courbe du toboggan (les pieds suivent la piste)
         go('tobo'); zl.classList.add('on'); host.style.zIndex = '6';
-        var an = w.animate(KS, { duration: 4300, delay: 450, easing: 'linear', fill: 'both' });
+        var an = w.animate(KS, { duration: 2800, delay: 300, easing: 'linear', fill: 'both' });
         an.onfinish = function () { host.style.zIndex = ''; if (st !== 'tobo') return; an.cancel(); av.innerHTML = window.__avFull('wink'); w.className = 'w arr'; st = 'arr'; setTimeout(function () { zl.classList.remove('on'); }, 900); t = setTimeout(startTour, 1700); };
         return;
       }
