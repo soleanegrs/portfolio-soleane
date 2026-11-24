@@ -36,9 +36,27 @@
     const t = d.getElementById('tpl-page');
     return t ? t.content : d.createDocumentFragment();
   };
-  Promise.all([get('partials/commun.html'), get('index.html'), get('curiosites.html')]).then(([commun, idx, cur]) => {
+  // chaque page téléphone ne va chercher que ce qu'elle affiche (allège le chargement)
+  const tplPage = document.getElementById('tpl-page');
+  const veutCartes = !!(tplPage && tplPage.content.querySelector('#m-cards'));
+  const veutObjets = !!(tplPage && tplPage.content.querySelector('#m-objs'));
+  const veutMachine = !!(tplPage && tplPage.content.querySelector('#m-machine'));
+  Promise.all([get('partials/commun.html'), veutCartes ? get('index.html') : '', veutObjets ? get('curiosites.html') : '', veutMachine ? get('a-propos.html') : '']).then(([commun, idx, cur, apr]) => {
     const accueil = partOf(idx), curio = partOf(cur);
     build(commun, (frag) => {
+      // machine à boules de la page à propos (dessin + ses couleurs), reprise telle quelle
+      const mz = frag.querySelector('#m-machine');
+      if (mz && apr) {
+        const d = new DOMParser().parseFromString(apr, 'text/html'), bt = d.getElementById('bonbon-tpl');
+        const src = bt ? bt.content : d;
+        const pink = src.querySelector('#pink'), defs = pink && pink.closest('svg'), mach = src.querySelector('svg.machine');
+        if (defs) {
+          const dc = document.importNode(defs, true);
+          dc.querySelectorAll('#P, #P2, #T').forEach((f) => f.remove());   // déjà définis par le gabarit commun
+          mz.appendChild(dc);
+        }
+        if (mach) mz.appendChild(document.importNode(mach, true));
+      }
       // cartes de projets (dans l'ordre de la guirlande), réduites pour la largeur du téléphone
       const cards = frag.querySelector('#m-cards');
       if (cards) accueil.querySelectorAll('button.hcard').forEach((b) => {
@@ -57,13 +75,14 @@
         o.classList.remove('bignb');
         const tile = document.createElement('div'); tile.className = 'mtile';
         const stage = document.createElement('div'); stage.className = 'mstage';
-        stage.style.setProperty('--k', Math.min(130 / w, 120 / h, 1.2).toFixed(3));
+        stage.style.setProperty('--k', Math.min(200 / w, 170 / h, 1.4).toFixed(3));
         stage.style.width = w + 'px'; stage.style.height = h + 'px';
         stage.appendChild(o); tile.appendChild(stage);
         const n = b.nextElementSibling;
         const lab = document.createElement('span'); lab.className = 'mlab';
         lab.innerHTML = (n && n.classList.contains('cname') ? n.innerHTML : (b.getAttribute('aria-label') || '')).replace(/<br\s*\/?>/gi, ' ');
-        if (n && n.style.color) lab.style.color = n.style.color;
+        // le scotch prend la couleur du nom (vert, rouge, rose, bleu…), en version claire
+        if (n && n.style.color) tile.style.setProperty('--tc', 'color-mix(in srgb, ' + n.style.color + ' 45%, #FBF8F1)');
         tile.appendChild(lab); objs.appendChild(tile);
       });
     });

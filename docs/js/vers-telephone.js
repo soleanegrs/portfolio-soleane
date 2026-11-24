@@ -12,7 +12,8 @@
     if (!telephone) return;
     var page = document.body ? document.body.dataset.page : '';
     var p = location.pathname.split('/').pop();
-    var ancre = /curiosites/.test(p) ? '#m-curio' : /a-propos/.test(p) ? '#m-apropos' : /#projets/.test(location.hash) ? '#m-projets' : '';
-    if (page !== 'mobile') location.replace('mobile.html' + ancre);
+    // chaque page ordinateur a sa page téléphone
+    var cible = /curiosites/.test(p) ? 'mobile-curiosites.html' : /a-propos/.test(p) ? 'mobile-a-propos.html' : ('mobile.html' + (/#projets/.test(location.hash) ? '#m-projets' : ''));
+    if (page !== 'mobile') location.replace(cible);
   } catch (e) {}
 })();

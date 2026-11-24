@@ -13,13 +13,10 @@
 </head>
 <body data-page="mobile">
 <div id="app"></div>
-<!-- Version téléphone : une seule page qu'on fait défiler.
-     Les cartes de projets (#m-cards) et les objets de l'étagère (#m-objs) sont repris automatiquement
-     dans index.html et curiosites.html (js/pages.js) ; les fenêtres (fiches, carnet, vidéos…) viennent de partials/commun.html ;
-     les étiquettes « à propos » viennent de js/bonbonniere.js (window.PF_ETIQUETTES). -->
+<!-- Version téléphone (3 pages : mobile.html, mobile-curiosites.html, mobile-a-propos.html). Fenêtres : partials/commun.html ; cartes et objets repris de index.html / curiosites.html (js/pages.js). -->
 <template id="tpl-page">
 <div class="mpage">
-
+<nav class="mnext mtop" aria-label="Pages du portfolio"><span class="hint"><button class="pill2 pmid " onClick="{{goCurio}}"><span class="pbg" aria-hidden="true"><svg viewBox="0 0 100 100" preserveAspectRatio="none" style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; overflow: visible"><g filter="url(#P2)"><rect x="1" y="1" width="98" height="98" rx="16" fill="#F5F0E7"></rect></g></svg></span><span class="pst" aria-hidden="true"></span><span class="plb">mes curiosités &#8594;</span></button></span></nav>
 <section id="m-debut" class="mhero">
 <div class="mtitle" aria-label="Portfolio"><span style="color: #FF5B4D; --t: -6deg">P</span><span style="color: #F47EB3; --t: 4deg">O</span><span style="color: #FFB92F; --t: -3deg">R</span><span style="color: #36A96B; --t: 5deg">T</span><span style="color: #3472F6; --t: -4deg">F</span><span style="color: #FF5B4D; --t: 3deg">O</span><span style="color: #F47EB3; --t: -5deg">L</span><span style="color: #FFB92F; --t: 4deg">I</span><span style="color: #36A96B; --t: -3deg">O</span></div>
 <span class="myear">2026</span>
@@ -28,32 +25,13 @@
 <p class="mhello">salut, moi c’est Soléane !</p>
 <span class="hint"><button class="pill2 pmid" onClick="{{goProjects}}"><span class="pbg" aria-hidden="true"><svg viewBox="0 0 100 100" preserveAspectRatio="none" style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; overflow: visible"><g filter="url(#P2)"><rect x="1" y="1" width="98" height="98" rx="16" fill="#F5F0E7"></rect></g></svg></span><span class="pst" aria-hidden="true"></span><span class="plb">voir mes projets &#8595;</span></button></span>
 </section>
-
 <section id="m-projets" class="msec">
 <h2 class="mh2"><span class="mburst" style="--c: #FFE45C; --s: #F21BC9"></span><span class="mh2t" style="color: #3472F6">mes projets</span></h2>
 <p class="mtip">touche une carte pour ouvrir le projet</p>
 <div id="m-cards" class="mcards"></div>
 </section>
-
-<section id="m-curio" class="msec">
-<h2 class="mh2"><span class="mburst" style="--c: #FFE45C; --s: #3472F6"></span><span class="mh2t" style="color: #F21BC9">espace des<br>curiosités</span></h2>
-<p class="mtip">mes photos, mon carnet, mes vidéos et mes affiches</p>
-<div id="m-objs" class="mgrid"></div>
-</section>
-
-<section id="m-apropos" class="msec">
-<h2 class="mh2"><span class="mburst" style="--c: #F47EB3; --s: #3472F6"></span><span class="mh2t" style="color: #FFE45C">à propos</span></h2>
-<div id="m-notes" class="mnotes"></div>
-<div class="mcontact">
-<p class="mcontt">un stage, un projet,<br>une question&#160;?</p>
-<a class="pill2 pmid" href="cv/CV-Soleane-Gros.pdf" target="_blank" rel="noopener"><span class="pbg" aria-hidden="true"><svg viewBox="0 0 100 100" preserveAspectRatio="none" style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; overflow: visible"><g filter="url(#P2)"><rect x="1" y="1" width="98" height="98" rx="16" fill="#F5F0E7"></rect></g></svg></span><span class="pst" aria-hidden="true"></span><span class="plb"><b class="cci" aria-hidden="true">&#8595;</b>mon CV</span></a>
-<button class="pill2 pmid pmail" onClick="{{openLetter}}"><span class="pbg" aria-hidden="true"><svg viewBox="0 0 100 100" preserveAspectRatio="none" style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; overflow: visible"><g filter="url(#P2)"><rect x="1" y="1" width="98" height="98" rx="16" fill="#F5F0E7"></rect></g></svg></span><span class="pst" aria-hidden="true"></span><span class="plb"><b class="cci" aria-hidden="true">&#9993;</b>m’envoyer un message</span></button>
-<a class="pill2 pmid pblue" href="https://www.linkedin.com/in/sol%C3%A9ane-gros/" target="_blank" rel="noopener"><span class="pbg" aria-hidden="true"><svg viewBox="0 0 100 100" preserveAspectRatio="none" style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; overflow: visible"><g filter="url(#P2)"><rect x="1" y="1" width="98" height="98" rx="16" fill="#F5F0E7"></rect></g></svg></span><span class="pst" aria-hidden="true"></span><span class="plb"><b class="cci cin" aria-hidden="true">in</b>mon LinkedIn &#8599;</span></a>
-<a class="pill2 pmid pinsta" href="https://www.instagram.com/soleane_gros/" target="_blank" rel="noopener"><span class="pbg" aria-hidden="true"><svg viewBox="0 0 100 100" preserveAspectRatio="none" style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; overflow: visible"><g filter="url(#P2)"><rect x="1" y="1" width="98" height="98" rx="16" fill="#F5F0E7"></rect></g></svg></span><span class="pst" aria-hidden="true"></span><span class="plb"><b class="cci" aria-hidden="true">@</b>mon Instagram &#8599;</span></a>
-</div>
+<nav class="mnext" aria-label="Suite du portfolio"><span class="hint"><button class="pill2 pmid " onClick="{{goCurio}}"><span class="pbg" aria-hidden="true"><svg viewBox="0 0 100 100" preserveAspectRatio="none" style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; overflow: visible"><g filter="url(#P2)"><rect x="1" y="1" width="98" height="98" rx="16" fill="#F5F0E7"></rect></g></svg></span><span class="pst" aria-hidden="true"></span><span class="plb">mes curiosités &#8594;</span></button></span></nav>
 <a class="mordi" href="index.html?ordi">voir la version ordinateur</a>
-</section>
-
 </div>
 </template>
 <script src="bords-data.js"></script>
@@ -62,26 +40,6 @@
 <script src="js/app.js"></script>
 <script src="js/pages.js"></script>
 <script src="js/pause-hors-ecran.js"></script>
-<script src="js/avatar.js"></script>
-<script src="js/bonbonniere.js"></script>
-<script>
-/* téléphone : avatar de la couverture et étiquettes « à propos » (textes partagés avec la bonbonnière) */
-(function () {
-  var t = setInterval(function () {
-    var av = document.getElementById('m-av'), notes = document.getElementById('m-notes');
-    if (!av || !notes || !window.AVATAR || !window.PF_ETIQUETTES) return;
-    clearInterval(t);
-    if (window.__avFull) av.innerHTML = window.__avFull('wink');
-    // arrivée depuis une page de l'ordinateur (curiosités, à propos…) : on va directement à la bonne partie
-    var cible = location.hash && document.getElementById(location.hash.slice(1)), sc = document.querySelector('.scroller');
-    if (cible && sc) setTimeout(function () { sc.scrollTop = Math.max(0, cible.offsetTop - 70); }, 400);
-    var COL = ['#FF5B4D', '#3472F6', '#36A96B', '#F21BC9', '#FFB92F'];
-    notes.innerHTML = window.PF_ETIQUETTES.map(function (o, i) {
-      return '<div class="mnote" style="--c: ' + COL[i % 5] + '; --r: ' + (i % 2 ? 1.5 : -1.5) + 'deg"><span class="mtape"></span>'
-        + '<span class="mic">' + window.AVATAR.avatar(o.e) + '</span><h3>' + o.t + '</h3><p>' + o.x + '</p></div>';
-    }).join('');
-  }, 150);
-})();
-</script>
+<script src="js/avatar.js"></script><script src="js/mobile.js"></script>
 </body>
 </html>

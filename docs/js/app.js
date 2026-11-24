@@ -264,10 +264,11 @@ class Component extends DCLogic {
   goPage(url) {
     this.setState({ menu: false, open: null, book: false, bookOpen: false, cab: null, lb: null, vlb: null });
     if (PAGE === 'mobile') {
-      // version téléphone : tout est sur une seule page, on fait défiler jusqu'à la bonne partie
-      const id = /curiosites/.test(url) ? 'm-curio' : /a-propos/.test(url) ? 'm-apropos' : /projets/.test(url) ? 'm-projets' : 'm-debut';
+      // version téléphone (3 pages) : si la partie est sur cette page on y fait défiler, sinon on change de page téléphone
+      const [file, id] = /curiosites/.test(url) ? ['mobile-curiosites.html', 'm-curio'] : /a-propos/.test(url) ? ['mobile-a-propos.html', 'm-apropos'] : /projets/.test(url) ? ['mobile.html', 'm-projets'] : ['mobile.html', 'm-debut'];
       const el = document.getElementById(id);
-      if (el && this.sc) this.sc.scrollTo({ top: Math.max(0, el.offsetTop - 70), behavior: 'smooth' });
+      if (el && this.sc) this.sc.scrollTo({ top: el.offsetTop > 400 ? el.offsetTop - 70 : 0, behavior: 'smooth' });
+      else window.location.href = file + '#' + id;
       return;
     }
     if (location.pathname.split('/').pop() === url) return;

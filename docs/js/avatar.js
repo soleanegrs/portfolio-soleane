@@ -12,12 +12,12 @@ const HAIRB = (() => {
 const BROWS = { normal: 'M122 120 Q134 113 146 119 M174 119 Q186 113 198 120', happy: 'M122 116 Q134 108 146 115 M174 115 Q186 108 198 116', joy: 'M120 112 Q134 100 148 110 M172 110 Q186 100 200 112', scream: 'M120 106 Q134 96 148 104 M172 104 Q186 96 200 106' };
 const STAR = 'M0 -12 L3 -4 L11.4 -3.7 L4.8 1.6 L7.1 9.7 L0 5 L-7.1 9.7 L-4.8 1.6 L-11.4 -3.7 L-3 -4 Z';
 function face(expr) {
-  const m = ['normal', 'wink', 'happy', 'star', 'love', 'think', 'wow'].indexOf(expr) >= 0 ? expr : 'normal';
+  const m = ['normal', 'wink', 'happy', 'star', 'love', 'think', 'wow', 'loupe'].indexOf(expr) >= 0 ? expr : 'normal';
   let s = '<g filter="url(#P2)"><ellipse cx="160" cy="150" rx="58" ry="66" fill="#F6CFB0"/></g>';
   const ck = (m === 'happy' || m === 'love' || m === 'star') ? .95 : .55;
   s += `<circle cx="122" cy="176" r="11" fill="#FF8BA7" opacity="${ck}"/><circle cx="198" cy="176" r="11" fill="#FF8BA7" opacity="${ck}"/>`;
   const br = { happy: 'happy', love: 'happy', star: 'joy', wow: 'scream', think: 'normal' }[m] || 'normal';
-  s += m === 'think' ? '<path d="M122 120 Q134 113 146 119 M174 112 Q186 104 198 112" fill="none" stroke="#B07A2C" stroke-width="4" stroke-linecap="round"/>' : `<path d="${BROWS[br]}" fill="none" stroke="#B07A2C" stroke-width="4" stroke-linecap="round"/>`;
+  s += (m === 'think' || m === 'loupe') ? '<path d="M122 120 Q134 113 146 119 M174 112 Q186 104 198 112" fill="none" stroke="#B07A2C" stroke-width="4" stroke-linecap="round"/>' : `<path d="${BROWS[br]}" fill="none" stroke="#B07A2C" stroke-width="4" stroke-linecap="round"/>`;
   const dot = (x, ox, oy) => `<ellipse cx="${x + ox}" cy="${148 + oy}" rx="6" ry="7" fill="#241F1C"/><circle cx="${x + ox + 2}" cy="${146 + oy}" r="2" fill="#fff"/>`;
   const shut = (x) => `<path d="M${x - 8} 150 Q${x} 143 ${x + 8} 150" fill="none" stroke="#241F1C" stroke-width="3.5" stroke-linecap="round"/>`;
   if (m === 'normal') s += dot(134, 0, 0) + dot(186, 0, 0);
@@ -32,7 +32,14 @@ function face(expr) {
   if (m === 'happy' || m === 'star' || m === 'love') s += '<path d="M122 176 Q160 238 198 176 Q160 188 122 176 Z" fill="#A01E3C"/><path d="M128 179 Q160 188 192 179 Q190 187 186 190 Q160 197 134 190 Q130 186 128 179 Z" fill="#fff"/>';
   if (m === 'think') s += '<path d="M146 190 Q158 184 174 188" fill="none" stroke="#A01E3C" stroke-width="4.5" stroke-linecap="round"/><g transform="translate(222 92)"><circle r="6" fill="#fff" stroke="#241F1C" stroke-width="2"/><circle cx="10" cy="-14" r="9" fill="#fff" stroke="#241F1C" stroke-width="2"/></g>';
   if (m === 'wow') s += '<ellipse cx="160" cy="192" rx="9" ry="11" fill="#A01E3C"/>';
+  // « loupe » : l'œil gauche normal, la bouche en petit « o » curieux (la loupe est posée par-dessus les lunettes, plus bas)
+  if (m === 'loupe') s += dot(134, 0, 0) + '<ellipse cx="162" cy="191" rx="7" ry="8" fill="#A01E3C"/>';
   s += '<rect x="111" y="127" width="46" height="40" rx="14" fill="#fff" fill-opacity=".18" stroke="#7A4824" stroke-width="6"/><rect x="163" y="127" width="46" height="40" rx="14" fill="#fff" fill-opacity=".18" stroke="#7A4824" stroke-width="6"/><path d="M157 140 Q160 134 163 140 M111 138 L100 134 M209 138 L220 134" fill="none" stroke="#7A4824" stroke-width="6" stroke-linecap="round"/>';
+  // la loupe devant l'œil droit : verre bleuté qui grossit l'œil, manche rouge
+  if (m === 'loupe') s += '<path d="M206 170 L240 212" stroke="#B8141D" stroke-width="15" stroke-linecap="round"/><path d="M206 170 L240 212" stroke="#FF5B4D" stroke-width="10" stroke-linecap="round"/>'
+    + '<circle cx="186" cy="147" r="33" fill="#DDEFF8" fill-opacity=".82" stroke="#3472F6" stroke-width="9"/>'
+    + '<ellipse cx="187" cy="149" rx="13" ry="15" fill="#241F1C"/><circle cx="192" cy="143" r="5" fill="#fff"/><circle cx="182" cy="156" r="2.4" fill="#fff"/>'
+    + '<path d="M164 134 Q170 122 184 120" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity=".85"/>';
   s += '<g filter="url(#P2)">';
   [[124,92,20],[148,82,22],[174,82,22],[198,94,20],[104,116,14],[216,116,14],[100,214,20],[98,250,18],[222,214,20],[224,250,18]].forEach(c => s += `<circle cx="${c[0]}" cy="${c[1]}" r="${c[2]}" fill="#EDBE55"/>`);
   return s + '</g>';
